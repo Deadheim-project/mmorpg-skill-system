@@ -4,19 +4,17 @@ namespace MMRPGSkillSystem
 {
     public class SkillService
     {
-        public static void SkillUp(Skills.SkillType skill)
+        public static void SkillUp(string skill)
         {
-            var sk = Player.m_localPlayer.m_skills.m_skillData[skill];
-            if (sk.m_level >= 100) return;
-
             int availablePoints = Convert.ToInt32(Level.GetAvailablePoints());
-
             if (availablePoints < 1) return;
 
-            sk.m_level += 1;
+            int skillLevel = Convert.ToInt32(Level.GetSkillLevel(skill));
+            string newLevel = (skillLevel + 1).ToString();
+            Player.m_localPlayer.m_knownTexts["player" + skill] = newLevel;
 
+            GUI.UpdateSkillLevelText(skill, newLevel);
             Level.RemovePoints();
-            GUI.UpdateSkillLevelText(skill, sk.m_level);
         }
     }
 }

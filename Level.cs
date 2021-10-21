@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace MMRPGSkillSystem
 {
@@ -15,9 +14,9 @@ namespace MMRPGSkillSystem
         public static void InitLevelRequirementList()
         {
             LevelRequirementList = new List<LevelRequirement>();
-            int baseExpLevelPerLevel = 1000;
-            float expMultiplier = 1.05f;
-            for (int level = 1; level <= MMRPGSkillSystem.MaxLevel; level++)
+            int baseExpLevelPerLevel = MMRPGSkillSystem.BaseExpPerLevel.Value;
+            float expMultiplier = MMRPGSkillSystem.ExpMultiplierPerLevel.Value;
+            for (int level = 1; level <= MMRPGSkillSystem.MaxLevel.Value; level++)
             {
                 LevelRequirement levelRequirement = new LevelRequirement();
                 levelRequirement.Level = level;
@@ -32,7 +31,6 @@ namespace MMRPGSkillSystem
                 var lastLevelRequirement = LevelRequirementList.Last().ExpAmount;
                 levelRequirement.ExpAmount = (long)Math.Round((lastLevelRequirement + baseExpLevelPerLevel) * expMultiplier);
                 LevelRequirementList.Add(levelRequirement);
-                Debug.LogError(levelRequirement.ExpAmount);
             }
         }
 
@@ -40,7 +38,11 @@ namespace MMRPGSkillSystem
         {
             MonsterExp monster = ExpTable.MonsterExpList.Where(x => x.Name == creatureName).FirstOrDefault();
 
-            if (monster == null) Debug.Log("No MonsterExp for creature: " + creatureName);
+            if (monster == null)
+            {
+                Debug.LogError("No MonsterExp for creature: " + creatureName);
+                return;
+            }
 
             AddExp(monster.ExpAmount);
         }
@@ -51,10 +53,10 @@ namespace MMRPGSkillSystem
             {
                 Player.m_localPlayer.m_knownTexts.Add("playerLevel", "1");
                 Player.m_localPlayer.m_knownTexts.Add("playerExp", exp.ToString());
-                Player.m_localPlayer.m_knownTexts.Add("playerPointsExpended", exp.ToString());
             }
             else
             {
+                exp *= MMRPGSkillSystem.ExpRate.Value;
                 long currentExp = long.Parse(Player.m_localPlayer.m_knownTexts["playerExp"]);
                 int currentLevel = Convert.ToInt32(Player.m_localPlayer.m_knownTexts["playerLevel"]);
                 long newExp = exp + currentExp;
@@ -69,6 +71,8 @@ namespace MMRPGSkillSystem
                     Player.m_localPlayer.m_knownTexts["playerExp"] = newExp.ToString();
                 }
             }
+
+            Debug.LogError(Player.m_localPlayer.m_knownTexts["playerExp"]);
 
             GUI.UpdateExpText();  
         }
@@ -104,7 +108,7 @@ namespace MMRPGSkillSystem
         {
             if (!Player.m_localPlayer.m_knownTexts.ContainsKey("playerExp"))
             {
-                Player.m_localPlayer.m_knownTexts.Add("playerExp", "1");
+                Player.m_localPlayer.m_knownTexts.Add("playerExp", "0");
             }
             return Player.m_localPlayer.m_knownTexts["playerExp"];
         }
@@ -126,9 +130,10 @@ namespace MMRPGSkillSystem
             }
 
             int availablePoints = Convert.ToInt32(GetAvailablePoints());
-            availablePoints += MMRPGSkillSystem.PointsPerLevel;
+            availablePoints += MMRPGSkillSystem.PointsPerLevel.Value;
 
             Player.m_localPlayer.m_knownTexts["playerAvailablePoints"] = availablePoints.ToString();
+            GUI.UpdatePlayerPointsAvailable();
         }
 
         public static void RemovePoints()
@@ -142,6 +147,18 @@ namespace MMRPGSkillSystem
             availablePoints -= 1;
 
             Player.m_localPlayer.m_knownTexts["playerAvailablePoints"] = availablePoints.ToString();
+            GUI.UpdatePlayerPointsAvailable();
+
+        }
+
+        public static string GetSkillLevel(string skill)
+        {
+            if (!Player.m_localPlayer.m_knownTexts.ContainsKey("player" + skill))
+            {
+                Player.m_localPlayer.m_knownTexts.Add("player" + skill, "1");
+            }
+
+            return Player.m_localPlayer.m_knownTexts["player" + skill];
         }
     }
 

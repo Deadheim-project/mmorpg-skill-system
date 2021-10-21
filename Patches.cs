@@ -1,21 +1,21 @@
 ﻿using HarmonyLib;
+using System.Collections.Generic;
+using UnityEngine;
 
 namespace MMRPGSkillSystem
 {
+    [HarmonyPatch]
     public class Patches
     {
-        [HarmonyPrefix]
-        [HarmonyPatch(typeof(Skills), "RaiseSkill")]
-        private static bool RaiseSkillPrefix(Skills __instance, Skills.SkillType skillType, float factor = 1f)
+        static bool listInitiliazed = false;
+        [HarmonyPostfix]
+        [HarmonyPatch(typeof(Player), "OnSpawned")]
+        private static void OnSpawnedPostfix()
         {
-            if (skillType == Skills.SkillType.None)
-                return false;
-            Skills.Skill skill = __instance.GetSkill(skillType);
-            float level = skill.m_level;
-            if (level > 1)
-                return false;
-
-            return true;          
+            if (listInitiliazed) return;
+            Level.InitLevelRequirementList();
+            ExpTable.InitMonsterExpList();
+            listInitiliazed = true;
         }
 
         [HarmonyPostfix]
@@ -25,5 +25,21 @@ namespace MMRPGSkillSystem
             if (__instance) Level.RaiseExp(__instance.name);
         }
 
+        [HarmonyPatch(typeof(ZNet), "Shutdown")]
+        internal class Disconnect
+        {
+            private static void Postfix()
+            {
+                foreach (var obj in MMRPGSkillSystem.menuItems)
+                {
+                    GameObject gameObject = obj.Value;
+                    Object.Destroy(gameObject);
+                }
+                MMRPGSkillSystem.menuItems = new Dictionary<string, GameObject>();
+                Object.Destroy(MMRPGSkillSystem.Menu);
+                MMRPGSkillSystem.Menu = null;
+                listInitiliazed = false;
+            }
+        }
     }
 }
