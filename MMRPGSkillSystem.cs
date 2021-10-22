@@ -19,6 +19,7 @@ namespace MMRPGSkillSystem
         public static Dictionary<string, GameObject> menuItems = new Dictionary<string, GameObject>();
 
         public static ConfigEntry<int> ExpRate;
+        public static ConfigEntry<int> StartingPoints;
         public static ConfigEntry<int> MaxLevel;
         public static ConfigEntry<int> PointsPerLevel;
         public static ConfigEntry<int> BaseExpPerLevel;
@@ -87,11 +88,16 @@ namespace MMRPGSkillSystem
 
         public void InitConfigs()
         {
-
             ExpRate = Config.Bind("Server config", "ExpRate", 1,
                 new ConfigDescription("ExpMultilplier",
                     new AcceptableValueRange<int>(1, 100), null,
                          new ConfigurationManagerAttributes { IsAdminOnly = true }));
+
+            StartingPoints = Config.Bind("Server config", "StartingPoints", 15,
+               new ConfigDescription("StartingPoints",
+                   new AcceptableValueRange<int>(1, 100), null,
+                        new ConfigurationManagerAttributes { IsAdminOnly = true }));
+
 
             MaxLevel = Config.Bind("Server config", "MaxLevel", 1,
                 new ConfigDescription("MaxLevel",
@@ -133,7 +139,7 @@ namespace MMRPGSkillSystem
                     new AcceptableValueRange<int>(1, int.MaxValue), null,
                          new ConfigurationManagerAttributes { IsAdminOnly = true }));
 
-            Tier2Creatures = Config.Bind("Server config", "Tier2Creatures", "gd_king,Greydwarf,Greydwarf_Elite,Greydwarf_Shaman,Skeleton,Rancid remains,Skeleton_Poison,TentaRoot,Skeleton_NoArcher",
+            Tier2Creatures = Config.Bind("Server config", "Tier2Creatures", "gd_king,Greydwarf,Greydwarf_Elite,Greydwarf_Shaman,Skeleton,Skeleton_Poison,TentaRoot,Skeleton_NoArcher",
                 new ConfigDescription("Tier2Creatures", null,
                         new ConfigurationManagerAttributes { IsAdminOnly = true }));
 

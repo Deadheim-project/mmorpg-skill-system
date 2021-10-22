@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MMRPGSkillSystem.PlayerSkills;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -117,7 +118,7 @@ namespace MMRPGSkillSystem
         {
             if (!Player.m_localPlayer.m_knownTexts.ContainsKey("playerAvailablePoints"))
             {
-                Player.m_localPlayer.m_knownTexts.Add("playerAvailablePoints", "0");
+                Player.m_localPlayer.m_knownTexts.Add("playerAvailablePoints", MMRPGSkillSystem.StartingPoints.ToString());
             }
             return Player.m_localPlayer.m_knownTexts["playerAvailablePoints"];
         }
@@ -151,14 +152,14 @@ namespace MMRPGSkillSystem
 
         }
 
-        public static string GetSkillLevel(string skill)
+        public static int GetSkillLevel(Skill skill)
         {
-            if (!Player.m_localPlayer.m_knownTexts.ContainsKey("player" + skill))
+            if (!Player.m_localPlayer.m_knownTexts.ContainsKey("player" + skill.ToString()))
             {
-                Player.m_localPlayer.m_knownTexts.Add("player" + skill, "1");
+                Player.m_localPlayer.m_knownTexts.Add("player" + skill.ToString(), "1");
             }
 
-            return Player.m_localPlayer.m_knownTexts["player" + skill];
+            return Convert.ToInt32(Player.m_localPlayer.m_knownTexts["player" + skill.ToString()]);
         }
     }
 
