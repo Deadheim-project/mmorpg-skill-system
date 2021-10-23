@@ -17,7 +17,6 @@ namespace MMRPGSkillSystem.PlayerSkills
         {
             public static void Postfix(ItemDrop.ItemData __instance, ref HitData.DamageTypes __result)
             {
-                if (Player.m_localPlayer == null) return;
                 int skillLevel = Level.GetSkillLevel(Skill.Strength);
 
                 if (skillLevel >= 50)
@@ -94,10 +93,9 @@ namespace MMRPGSkillSystem.PlayerSkills
 
         private static void ApplyPassiveMultiplier(ItemDrop.ItemData __instance, ref HitData.DamageTypes __result, int skillLevel)
         {
-            if (Player.m_localPlayer == null) return;
-            float twoHandedMultiplier = ((skillLevel / 100) * PassiveTwoHandedMultiplier) / 1000 + 1;
-            float oneHandedMultiplier = ((skillLevel / 100) * PassiveOneHandedMultiplier) / 1000 + 1;
-            float chopAndPickaxeMultiplier = ((skillLevel / 100) * PassiveChopAndPickaxeMultiplier) / 1000 + 1;
+            float twoHandedMultiplier = ((skillLevel / 100) * PassiveTwoHandedMultiplier) / 100 + 1;
+            float oneHandedMultiplier = ((skillLevel / 100) * PassiveOneHandedMultiplier) / 100 + 1;
+            float chopAndPickaxeMultiplier = ((skillLevel / 100) * PassiveChopAndPickaxeMultiplier) / 100 + 1;
 
             if (__instance.m_shared.m_itemType == ItemDrop.ItemData.ItemType.OneHandedWeapon)
             {
@@ -134,7 +132,6 @@ namespace MMRPGSkillSystem.PlayerSkills
         {
             public static void Postfix(Attack __instance, ref float __result)
             {
-                if (Player.m_localPlayer == null) return;
                 if (__instance.m_character is Player player)
                 {
                     int skillLevel = Level.GetSkillLevel(Skill.Strength);
@@ -152,7 +149,6 @@ namespace MMRPGSkillSystem.PlayerSkills
         {
             public static void Postfix(SEMan __instance, ref float limit)
             {
-                if (Player.m_localPlayer == null) return;
                 if (__instance.m_character.IsPlayer())
                 {
                     int skillLevel = Level.GetSkillLevel(Skill.Strength);
@@ -178,6 +174,7 @@ namespace MMRPGSkillSystem.PlayerSkills
             static void Postfix(ref Animator ___m_animator, Character ___m_character, float speedScale)
             {
                 if (Player.m_localPlayer == null) return;
+
                 int skillLevel = Level.GetSkillLevel(Skill.Strength);
                 if (skillLevel < 150) return;
 

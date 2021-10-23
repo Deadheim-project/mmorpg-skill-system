@@ -19,6 +19,7 @@ namespace MMRPGSkillSystem
         public static Dictionary<string, GameObject> menuItems = new Dictionary<string, GameObject>();
 
         public static ConfigEntry<int> ExpRate;
+        public static ConfigEntry<bool> RequiresTokenToResetSkill;
         public static ConfigEntry<int> StartingPoints;
         public static ConfigEntry<int> MaxLevel;
         public static ConfigEntry<int> PointsPerLevel;
@@ -75,6 +76,7 @@ namespace MMRPGSkillSystem
             };
 
             harmony.PatchAll();
+            ResetToken.LoadAssets();
             ExpTable.InitMonsterExpList();
         }
 
@@ -83,13 +85,17 @@ namespace MMRPGSkillSystem
             if (Input.GetKeyDown(KeyboardShortcut.Value))
             {
                 GUI.ToggleMenu();
-            }
+            }   
         }
 
         public void InitConfigs()
         {
+            RequiresTokenToResetSkill = Config.Bind("Server config", "RequiresTokenToResetSkill", false,
+                new ConfigDescription("RequiresTokenToResetSkill", null,
+                         new ConfigurationManagerAttributes { IsAdminOnly = true }));
+
             ExpRate = Config.Bind("Server config", "ExpRate", 1,
-                new ConfigDescription("ExpMultilplier",
+                new ConfigDescription("ExpRate",
                     new AcceptableValueRange<int>(1, 100), null,
                          new ConfigurationManagerAttributes { IsAdminOnly = true }));
 
@@ -99,19 +105,19 @@ namespace MMRPGSkillSystem
                         new ConfigurationManagerAttributes { IsAdminOnly = true }));
 
 
-            MaxLevel = Config.Bind("Server config", "MaxLevel", 1,
+            MaxLevel = Config.Bind("Server config", "MaxLevel", 100,
                 new ConfigDescription("MaxLevel",
                     new AcceptableValueRange<int>(1, 1000), null,
                         new ConfigurationManagerAttributes { IsAdminOnly = true }));
 
             BaseExpPerLevel = Config.Bind("Server config", "BaseExpPerLevel", 1000,
-                new ConfigDescription("BaseExpPerLevel",
+                new ConfigDescription("Last level exp + BaseExpPerlevel * ExpMultiplierPerlevel is exp requirement formula",
                     new AcceptableValueRange<int>(1, int.MaxValue), null,
                         new ConfigurationManagerAttributes { IsAdminOnly = true }));
 
 
             ExpMultiplierPerLevel = Config.Bind("Server config", "ExpMultiplierPerLevel", 1.05f,
-                new ConfigDescription("ExpMultiplierPerLevel",
+                new ConfigDescription("Last level exp + BaseExpPerlevel * ExpMultiplierPerlevel is exp requirement formula",
                     new AcceptableValueRange<float>(1, 100), null,
                          new ConfigurationManagerAttributes { IsAdminOnly = true }));
 
@@ -120,10 +126,10 @@ namespace MMRPGSkillSystem
                     new AcceptableValueRange<int>(1, int.MaxValue), null,
                         new ConfigurationManagerAttributes { IsAdminOnly = true }));
 
-            KeyboardShortcut = Config.Bind("Server Config", "KeyboardShortcutConfig",
-                KeyCode.Equals,
-                    new ConfigDescription("Server side KeyboardShortcut", null, null,
-                        new ConfigurationManagerAttributes { IsAdminOnly = true }));
+            KeyboardShortcut = Config.Bind("Client config", "KeyboardShortcutConfig",
+                KeyCode.Insert,
+                    new ConfigDescription("Client side KeyboardShortcut", null, null,
+                    new ConfigurationManagerAttributes { IsAdminOnly = false }));
 
             Tier1Exp = Config.Bind("Server config", "Tier1Exp", 50,
                 new ConfigDescription("Tier1Exp",

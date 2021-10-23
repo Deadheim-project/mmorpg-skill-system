@@ -119,16 +119,22 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Valheim\unstripped_corlib\UnityEngine.UI.dll</HintPath>
     </Reference>
+    <Reference Include="UnityEngine.UIModule">
+      <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Valheim\unstripped_corlib\UnityEngine.UIModule.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ExpTable.cs" />
+    <Compile Include="GUIConfirm.cs" />
     <Compile Include="Level.cs" />
     <Compile Include="GUI.cs" />
     <Compile Include="MMRPGSkillSystem.cs" />
-    <Compile Include="Skills\SkillManager.cs" />
+    <Compile Include="PlayerSkills\Agility.cs" />
+    <Compile Include="PlayerSkills\SkillManager.cs" />
+    <Compile Include="PlayerSkills\Strength.cs" />
     <Compile Include="Patches.cs" />
-    <Compile Include="Skills\Strength.cs" />
-    <Compile Include="Effect.cs" />
+    <Compile Include="PlayerSkills\Reset.cs" />
+    <Compile Include="ResetToken.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

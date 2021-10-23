@@ -35,21 +35,32 @@ namespace MMRPGSkillSystem
             }
         }
 
-        public static void RaiseExp(string creatureName)
+        public static void RaiseExp(Character creature)
         {
-            MonsterExp monster = ExpTable.MonsterExpList.Where(x => x.Name == creatureName).FirstOrDefault();
+            MonsterExp monster = ExpTable.MonsterExpList.Where(x => x.Name == creature.m_name).FirstOrDefault();
 
             if (monster == null)
             {
-                Debug.LogError("No MonsterExp for creature: " + creatureName);
+                Debug.LogError("No MonsterExp for creature: " + creature.m_name);
                 return;
             }
 
-            AddExp(monster.ExpAmount);
+            var exp = monster.ExpAmount * (creature.m_level / 100 + 1); //10% exp bonus per star
+
+            if (creature.m_faction == Character.Faction.Boss) exp *= 10; //10x bonus boss
+
+            float rangeToDivideExp = 100f;
+            int nearPlayers = Player.GetPlayersInRangeXZ(Player.m_localPlayer.transform.position, rangeToDivideExp);
+
+            Debug.LogError("nearPlayers: " + nearPlayers);
+            exp *= MMRPGSkillSystem.ExpRate.Value;
+            exp /= nearPlayers;
+
+            AddExp(exp);
         }
 
         unsafe public static void AddExp(int exp)
-        {
+        {            
             if (!Player.m_localPlayer.m_knownTexts.ContainsKey("playerLevel"))
             {
                 Player.m_localPlayer.m_knownTexts.Add("playerLevel", "1");
@@ -57,7 +68,6 @@ namespace MMRPGSkillSystem
             }
             else
             {
-                exp *= MMRPGSkillSystem.ExpRate.Value;
                 long currentExp = long.Parse(Player.m_localPlayer.m_knownTexts["playerExp"]);
                 int currentLevel = Convert.ToInt32(Player.m_localPlayer.m_knownTexts["playerLevel"]);
                 long newExp = exp + currentExp;
@@ -118,7 +128,7 @@ namespace MMRPGSkillSystem
         {
             if (!Player.m_localPlayer.m_knownTexts.ContainsKey("playerAvailablePoints"))
             {
-                Player.m_localPlayer.m_knownTexts.Add("playerAvailablePoints", MMRPGSkillSystem.StartingPoints.ToString());
+                Player.m_localPlayer.m_knownTexts.Add("playerAvailablePoints", MMRPGSkillSystem.StartingPoints.Value.ToString());
             }
             return Player.m_localPlayer.m_knownTexts["playerAvailablePoints"];
         }
@@ -139,11 +149,6 @@ namespace MMRPGSkillSystem
 
         public static void RemovePoints()
         {
-            if (!Player.m_localPlayer.m_knownTexts.ContainsKey("playerAvailablePoints"))
-            {
-                Player.m_localPlayer.m_knownTexts.Add("playerAvailablePoints", "0");
-            }
-
             int availablePoints = Convert.ToInt32(GetAvailablePoints());
             availablePoints -= 1;
 

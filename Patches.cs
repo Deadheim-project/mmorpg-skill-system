@@ -22,7 +22,7 @@ namespace MMRPGSkillSystem
         [HarmonyPatch(typeof(Character), "OnDeath")]
         private static void RaiseExpPostfix(Character __instance)
         {
-            if (__instance) Level.RaiseExp(__instance.name);
+            if (__instance) Level.RaiseExp(__instance);
         }
 
         [HarmonyPatch(typeof(ZNet), "Shutdown")]

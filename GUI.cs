@@ -42,16 +42,34 @@ namespace MMRPGSkillSystem
 
         public static void LoadMenu()
         {
+            if (Player.m_localPlayer == null) return;
+
             MMRPGSkillSystem.Menu = GUIManager.Instance.CreateWoodpanel(
                                                                        parent: GUIManager.CustomGUIFront.transform,
                                                                        anchorMin: new Vector2(0.5f, 0.5f),
                                                                        anchorMax: new Vector2(0.5f, 0.5f),
                                                                        position: new Vector2(0, 0),
                                                                        width: 400,
-                                                                       height: 600,
+                                                                       height: 700,
                                                                        draggable: true);
             MMRPGSkillSystem.Menu.SetActive(false);
 
+            GameObject scrollView = GUIManager.Instance.CreateScrollView(parent: MMRPGSkillSystem.Menu.transform,
+                    showHorizontalScrollbar: false,
+                    showVerticalScrollbar: true,
+                    handleSize: 8f,
+                    handleColors: GUIManager.Instance.ValheimScrollbarHandleColorBlock,
+                    handleDistanceToBorder: 50f,
+                    slidingAreaBackgroundColor: new Color(0.1568628f, 0.1019608f, 0.0627451f, 1f),
+                    width: 350f,
+                    height: 270f
+                );
+
+            var tf = (RectTransform)scrollView.transform;
+            tf.anchoredPosition = new Vector2(0, -50);
+            scrollView.SetActive(true);
+
+            scrollView.transform.Find("Scroll View").GetComponent<ScrollRect>().verticalNormalizedPosition = 1f;
 
             GameObject textObject = GUIManager.Instance.CreateText(
                 text: Player.m_localPlayer.GetPlayerName(),
@@ -67,7 +85,6 @@ namespace MMRPGSkillSystem
                 width: 150f,
                 height: 40f,
                 addContentSizeFitter: false);
-
 
             GameObject levelTextObject = GUIManager.Instance.CreateText(
                 text: "Level: " + Level.GetLevel(),
@@ -90,14 +107,31 @@ namespace MMRPGSkillSystem
             List<GameObject> texts = new List<GameObject>();
 
 
-            foreach (PlayerSkills.Skill skill in Enum.GetValues(typeof(PlayerSkills.Skill)).Cast<PlayerSkills.Skill>().ToList())
+            foreach (Skill skill in Enum.GetValues(typeof(PlayerSkills.Skill)).Cast<PlayerSkills.Skill>().ToList())
             {
+                var skillLevel = Level.GetSkillLevel(skill);
+
+                GameObject skillText = GUIManager.Instance.CreateText(
+                    text: skill.ToString(),
+                    parent: MMRPGSkillSystem.Menu.transform,
+                    anchorMin: new Vector2(0.5f, 1f),
+                    anchorMax: new Vector2(0.5f, 1f),
+                    position: new Vector2(-100f, -100f + (-28 * interfaceMultiplier)),
+                    font: GUIManager.Instance.AveriaSerifBold,
+                    fontSize: 18,
+                    color: GUIManager.Instance.ValheimOrange,
+                    outline: true,
+                    outlineColor: Color.black,
+                    width: 150f,
+                    height: 25f,
+                    addContentSizeFitter: false);
+
                 GameObject buttonObject2 = GUIManager.Instance.CreateButton(
                           text: " + ",
                           parent: MMRPGSkillSystem.Menu.transform,
                           anchorMin: new Vector2(0.5f, 0.5f),
                           anchorMax: new Vector2(0.5f, 0.5f),
-                          position: new Vector2(50f, 200f + (-28 * interfaceMultiplier)),
+                          position: new Vector2(110f, 252f + (-28 * interfaceMultiplier)),
                           width: 30f,
                           height: 25f);
                 buttonObject2.SetActive(true);
@@ -105,30 +139,31 @@ namespace MMRPGSkillSystem
                 Button button2 = buttonObject2.GetComponent<Button>();
                 button2.onClick.AddListener(delegate { SkillManager.SkillUp(skill); });
 
-                GameObject textObject2 = GUIManager.Instance.CreateText(
-                    text: skill + " - " + Level.GetSkillLevel(skill),
-                    parent: MMRPGSkillSystem.Menu.transform,
-                    anchorMin: new Vector2(0.5f, 1f),
-                    anchorMax: new Vector2(0.5f, 1f),
-                    position: new Vector2(-100f, -100f + (-28 * interfaceMultiplier++)),
-                    font: GUIManager.Instance.AveriaSerifBold,
-                    fontSize: 18,
-                    color: GUIManager.Instance.ValheimOrange,
-                    outline: true,
-                    outlineColor: Color.black,
-                    width: 150f,
-                    height: 20f,
-                    addContentSizeFitter: false);
 
-                MMRPGSkillSystem.menuItems.Add(skill.ToString() + "Text", textObject2);
+                GameObject levelText = GUIManager.Instance.CreateText(
+                      text: skillLevel.ToString(),
+                      parent: MMRPGSkillSystem.Menu.transform,
+                      anchorMin: new Vector2(0.5f, 1f),
+                      anchorMax: new Vector2(0.5f, 1f),
+                      position: new Vector2(70f, -100f + (-28 * interfaceMultiplier++)),
+                      font: GUIManager.Instance.AveriaSerifBold,
+                      fontSize: 18,
+                      color: GUIManager.Instance.ValheimOrange,
+                      outline: true,
+                      outlineColor: Color.black,
+                      width: 30f,
+                      height: 25f,
+                      addContentSizeFitter: false);
+
+                MMRPGSkillSystem.menuItems.Add(skill.ToString() + "Text", levelText);
             }
 
             GameObject availableEffectsTitle = GUIManager.Instance.CreateText(
                  text: "Available Effects:",
                  parent: MMRPGSkillSystem.Menu.transform,
-                 anchorMin: new Vector2(0.5f, 1f),
-                 anchorMax: new Vector2(0.5f, 1f),
-                position: new Vector2(-100f, -245f),
+                   new Vector2(0.5f, 0.5f),
+                        new Vector2(0.5f, 0.5f),
+                        new Vector2(-100f, 100f),
                  font: GUIManager.Instance.AveriaSerifBold,
                  fontSize: 15,
                  color: GUIManager.Instance.ValheimOrange,
@@ -138,14 +173,16 @@ namespace MMRPGSkillSystem
                  height: 20f,
                  addContentSizeFitter: false);
 
-            CreateAvailableEffectListText();
+            CreateAvailableEffectListText(scrollView);
+
+            scrollView.transform.Find("Scroll View").GetComponent<ScrollRect>().verticalNormalizedPosition = 1f;
 
             GameObject expTextObject = GUIManager.Instance.CreateText(
                  text: "Exp: " + Level.GetExp() + "/" + Level.GetMaxExpForCurrentLevel(),
                  parent: MMRPGSkillSystem.Menu.transform,
                  anchorMin: new Vector2(0.5f, 1f),
                  anchorMax: new Vector2(0.5f, 1f),
-                position: new Vector2(-100f, -550f),
+                position: new Vector2(-100f, -570),
                  font: GUIManager.Instance.AveriaSerifBold,
                  fontSize: 15,
                  color: GUIManager.Instance.ValheimOrange,
@@ -154,7 +191,6 @@ namespace MMRPGSkillSystem
                  width: 150f,
                  height: 20f,
                  addContentSizeFitter: false);
-
             MMRPGSkillSystem.menuItems.Add("ExpText", expTextObject);
 
             GameObject pointsAvailableObject = GUIManager.Instance.CreateText(
@@ -162,7 +198,7 @@ namespace MMRPGSkillSystem
                      parent: MMRPGSkillSystem.Menu.transform,
                      anchorMin: new Vector2(0.5f, 1f),
                      anchorMax: new Vector2(0.5f, 1f),
-                    position: new Vector2(-100f, -500f),
+                    position: new Vector2(-100f, -600f),
                      font: GUIManager.Instance.AveriaSerifBold,
                      fontSize: 15,
                      color: GUIManager.Instance.ValheimOrange,
@@ -171,38 +207,50 @@ namespace MMRPGSkillSystem
                      width: 150f,
                      height: 20f,
                      addContentSizeFitter: false);
-
             MMRPGSkillSystem.menuItems.Add("PlayerPointsAvailableText", pointsAvailableObject);
+
+            GameObject resetButton = GUIManager.Instance.CreateButton(
+              text: "Reset",
+              parent: MMRPGSkillSystem.Menu.transform,
+              anchorMin: new Vector2(0.5f, 0.5f),
+              anchorMax: new Vector2(0.5f, 0.5f),
+              position: new Vector2(140, -240f),
+              width: 80,
+              height: 30f);
+            resetButton.SetActive(true);
+
+            Button buttonReset = resetButton.GetComponent<Button>();
+            buttonReset.onClick.AddListener(GUIConfirm.CreateResetSkillMenu);
 
             GameObject buttonObject = GUIManager.Instance.CreateButton(
                 text: "Close",
                 parent: MMRPGSkillSystem.Menu.transform,
                 anchorMin: new Vector2(0.5f, 0.5f),
                 anchorMax: new Vector2(0.5f, 0.5f),
-                position: new Vector2(0, -250f),
-                width: 100,
-                height: 60f);
+                position: new Vector2(0, -300f),
+                width: 170,
+                height: 45f);
             buttonObject.SetActive(true);
 
             Button button = buttonObject.GetComponent<Button>();
             button.onClick.AddListener(DestroyMenu);
         }
 
-        private static void CreateAvailableEffectListText()
+        private static void CreateAvailableEffectListText(GameObject scrollView)
         {
             GameObject availableEffectsListText = GUIManager.Instance.CreateText(
                  text: "",
-                 parent: MMRPGSkillSystem.Menu.transform,
-                 anchorMin: new Vector2(0.5f, 1f),
-                 anchorMax: new Vector2(0.5f, 1f),
-                position: new Vector2(0f, -370f),
+                 parent: scrollView.transform.Find("Scroll View/Viewport/Content"),
+                 new Vector2(0.5f, 0.5f),
+                 new Vector2(0.5f, 0.5f),
+                 new Vector2(0f, 80f),
                  font: GUIManager.Instance.AveriaSerifBold,
                  fontSize: 15,
                  color: GUIManager.Instance.ValheimOrange,
                  outline: true,
                  outlineColor: Color.black,
-                 width: 350f,
-                 height: 250f,
+                 width: 300f,
+                 height: 150f,
                  addContentSizeFitter: false);
 
             MMRPGSkillSystem.menuItems.Add("availableEffectsListText", availableEffectsListText);
@@ -220,6 +268,45 @@ namespace MMRPGSkillSystem
             {
                 txt.GetComponent<Text>().text = "";
                 SetStrengthAvailableEffectListText(txt);
+                SetAgilityAvailableEffectListText(txt);
+            }
+        }
+
+        private static void SetAgilityAvailableEffectListText(GameObject txt)
+        {
+            int skillLevel = Level.GetSkillLevel(Skill.Agility);
+
+            if (skillLevel <= 1) return;
+
+            float bowPolearmMultiplier = (skillLevel / 100f) * Agility.PassiveBowPolearmMultiplier;
+            float spearKnifeMultiplier = (skillLevel / 100f) * Agility.PassiveSpearKnifeMultiplier;
+
+            txt.GetComponent<Text>().text += "\n +" + bowPolearmMultiplier + "% Bow and polearm damage";
+            txt.GetComponent<Text>().text += "\n +" + spearKnifeMultiplier + "% Knife and spear damage";
+
+            if (skillLevel >= 50)
+            {
+                txt.GetComponent<Text>().text += "\n Agility 50: +5% move speed";
+                txt.GetComponent<Text>().text += "\n Agility 50: +10% backstab damage";
+            }
+
+            if (skillLevel >= 100)
+            {
+                txt.GetComponent<Text>().text += "\n Agility 100: +10% Bow and knife damage";
+                txt.GetComponent<Text>().text += "\n Agility 100: -10% Run and Jump stamina";
+            }
+
+            if (skillLevel >= 150)
+            {
+                txt.GetComponent<Text>().text += "\n Agility 150: +12% move speed";
+                txt.GetComponent<Text>().text += "\n Agility 150: +20% Spears and polearm damage";
+            }
+
+            if (skillLevel >= 200)
+            {
+                txt.GetComponent<Text>().text += "\n Agility 200: +20% backstab";
+                txt.GetComponent<Text>().text += "\n Agility 200: +10% movespeed";
+                txt.GetComponent<Text>().text += "\n Agility 200: +20% Knives and Bows damage";
             }
         }
 
@@ -233,33 +320,33 @@ namespace MMRPGSkillSystem
             float oneHandedMultiplier = (skillLevel / 100f) * Strength.PassiveOneHandedMultiplier;
             float chopAndPickaxeMultiplier = (skillLevel / 100f) * Strength.PassiveChopAndPickaxeMultiplier;
 
-            txt.GetComponent<Text>().text += "\n    +" + twoHandedMultiplier + "% Two-handed damage"; 
-            txt.GetComponent<Text>().text += "\n    +" + oneHandedMultiplier + "% One-handed damage"; 
-            txt.GetComponent<Text>().text += "\n    +" + chopAndPickaxeMultiplier + "% Chop and pickaxe damage"; 
+            txt.GetComponent<Text>().text += "\n +" + twoHandedMultiplier + "% Two-handed damage";
+            txt.GetComponent<Text>().text += "\n +" + oneHandedMultiplier + "% One-handed damage";
+            txt.GetComponent<Text>().text += "\n +" + chopAndPickaxeMultiplier + "% Chop and pickaxe damage";
 
             if (skillLevel >= 50)
             {
-                txt.GetComponent<Text>().text += "\n    Strength 50: +10% One-handed damage";
-                txt.GetComponent<Text>().text += "\n    Strength 50: +50 carry weight";
+                txt.GetComponent<Text>().text += "\n Strength 50: +10% One-handed damage";
+                txt.GetComponent<Text>().text += "\n Strength 50: +50 carry weight";
             }
 
             if (skillLevel >= 100)
             {
-                txt.GetComponent<Text>().text += "\n    Strength 100: +20% Two-handed damage";
-                txt.GetComponent<Text>().text += "\n    Strength 100: -10% Attack stamina";
+                txt.GetComponent<Text>().text += "\n Strength 100: +20% Two-handed damage";
+                txt.GetComponent<Text>().text += "\n Strength 100: -10% Attack stamina";
             }
 
             if (skillLevel >= 150)
             {
-                txt.GetComponent<Text>().text += "\n    Strength 150: +10% One-handed speed";
-                txt.GetComponent<Text>().text += "\n    Strength 150: +20% Sword damage";
-                txt.GetComponent<Text>().text += "\n    Strength 150: +50 carry weight";
+                txt.GetComponent<Text>().text += "\n Strength 150: +10% One-handed speed";
+                txt.GetComponent<Text>().text += "\n Strength 150: +20% Sword damage";
+                txt.GetComponent<Text>().text += "\n Strength 150: +50 carry weight";
             }
 
             if (skillLevel >= 200)
             {
-                txt.GetComponent<Text>().text += "\n    Strength 200: +15% damage";
-                txt.GetComponent<Text>().text += "\n    Strength 200: +5% Two-handed speed";
+                txt.GetComponent<Text>().text += "\n Strength 200: +15% damage";
+                txt.GetComponent<Text>().text += "\n Strength 200: +5% Two-handed speed";
             }
         }
 
@@ -281,7 +368,7 @@ namespace MMRPGSkillSystem
 
             if (txt)
             {
-                txt.GetComponent<Text>().text = skill + " - " + level;
+                txt.GetComponent<Text>().text = level + "    " + skill;
             }
             SetAvailableEffectListText();
         }
