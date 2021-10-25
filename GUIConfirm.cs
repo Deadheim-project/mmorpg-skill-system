@@ -25,7 +25,7 @@ namespace MMRPGSkillSystem
                                         anchorMax: new Vector2(0.5f, 0.5f),
                                         position: new Vector2(0, 0),
                                         width: 300,
-                                        height: 200,
+                                        height: 220,
                                         draggable: true);
                 MMRPGSkillSystem.Menu.SetActive(false);
 
@@ -34,7 +34,7 @@ namespace MMRPGSkillSystem
                     parent: menu.transform,
                     anchorMin: new Vector2(0.5f, 1f),
                     anchorMax: new Vector2(0.5f, 1f),
-                    position: new Vector2(0f, -30f),
+                    position: new Vector2(0f, -40f),
                     font: GUIManager.Instance.AveriaSerifBold,
                     fontSize: 25,
                     color: GUIManager.Instance.ValheimOrange,
@@ -49,7 +49,7 @@ namespace MMRPGSkillSystem
                    parent: menu.transform,
                    anchorMin: new Vector2(0.5f, 0.5f),
                    anchorMax: new Vector2(0.5f, 0.5f),
-                   position: new Vector2(-70, -30),
+                   position: new Vector2(70, -30),
                    width: 100,
                    height: 50f);
                 yesButton.SetActive(true);
@@ -62,7 +62,7 @@ namespace MMRPGSkillSystem
                    parent: menu.transform,
                    anchorMin: new Vector2(0.5f, 0.5f),
                    anchorMax: new Vector2(0.5f, 0.5f),
-                   position: new Vector2(70, -30),
+                   position: new Vector2(-70, -30),
                    width: 100,
                    height: 50f);
                 noButton.SetActive(true);

@@ -5,6 +5,8 @@ using BepInEx.Configuration;
 using Jotunn.Utils;
 using HarmonyLib;
 using Jotunn.Managers;
+using System;
+using MMRPGSkillSystem.PlayerSkills;
 
 namespace MMRPGSkillSystem
 {
@@ -16,6 +18,18 @@ namespace MMRPGSkillSystem
         public const string PluginGUID = "Detalhes.MMRPGSkillSystem";
         public const string Name = "MMRPGSkillSystem";
         public const string Version = "1.0.0";
+
+        public static bool listInitiliazed = false;
+
+        public static List<string> PotionToReduceCooldownNameList = new List<string>(new string[] { "Flask_of_the_Gods", "Grand_Healing_Tide_Potion", "Grand_Spiritual_Healing_Potion", "Grand_Stamina_Elixir", "Medium_Healing_Tide_Flask", "Medium_Spiritual_Healing_Flask", "Medium_Stamina_Flask", "Lesser_Healing_Tide_Vial", "Lesser_Spiritual_Healing_Vial", "Lesser_Stamina_Vial", "MeadHealthMedium", "MeadHealthMinor", "MeadStaminaMedium", "MeadStaminaMinor" });
+        public static List<string> PotionToIncreaseTimeNameList = new List<string>(new string[] { "Flask_of_Elements", "Flask_of_Fortification", "Flask_of_Second_Wind", "Grand_Stealth_Elixir", "MeadPoisonResist", "MeadTasty", "MeadFrostResist", "BarleyWine", "Flask_of_Magelight" });
+        public static List<string> PotionNameList = new List<string>(new string[] {
+            "Flask_of_Elements", "Flask_of_Fortification", "Flask_of_the_Gods", "Flask_of_Magelight", "Flask_of_Second_Wind",
+            "Grand_Healing_Tide_Potion", "Grand_Spiritual_Healing_Potion", "Grand_Stamina_Elixir", "Grand_Stealth_Elixir",
+            "Medium_Healing_Tide_Flask", "Medium_Spiritual_Healing_Flask", "Medium_Stamina_Flask", "Lesser_Healing_Tide_Vial",
+            "Lesser_Spiritual_Healing_Vial", "Lesser_Stamina_Vial", "Potion_Meadbase", "MeadHealthMedium", "MeadHealthMinor",
+            "MeadPoisonResist", "MeadStaminaMedium", "MeadStaminaMinor", "MeadTasty", "MeadFrostResist"  });
+
         public static Dictionary<string, GameObject> menuItems = new Dictionary<string, GameObject>();
 
         public static ConfigEntry<int> ExpRate;
@@ -84,12 +98,22 @@ namespace MMRPGSkillSystem
         {
             if (Input.GetKeyDown(KeyboardShortcut.Value))
             {
+                Player localPlayer = Player.m_localPlayer;
+                if (!localPlayer || localPlayer.IsDead() || (localPlayer.InCutscene() || localPlayer.IsTeleporting()))
+                    return;
+
                 GUI.ToggleMenu();
-            }   
+            }
         }
 
         public void InitConfigs()
         {
+            Strength.InitConfigs(Config);
+            Focus.InitConfigs(Config);
+            Agility.InitConfigs(Config);
+            Intelligence.InitConfigs(Config);
+            Constitution.InitConfigs(Config);
+
             RequiresTokenToResetSkill = Config.Bind("Server config", "RequiresTokenToResetSkill", false,
                 new ConfigDescription("RequiresTokenToResetSkill", null,
                          new ConfigurationManagerAttributes { IsAdminOnly = true }));
@@ -157,7 +181,7 @@ namespace MMRPGSkillSystem
             Tier3Creatures = Config.Bind("Server config", "Tier3Creatures", "Bonemass,Blob,Ghost,Leech,Wraith,Draugr,Draugr_Ranged,Surtling,Troll",
                 new ConfigDescription("Tier3Creatures", null,
                         new ConfigurationManagerAttributes { IsAdminOnly = true }));
-            
+
             Tier4Exp = Config.Bind("Server config", "Tier4Exp", 300,
                 new ConfigDescription("Tier4Exp",
                     new AcceptableValueRange<int>(1, int.MaxValue), null,
@@ -166,7 +190,7 @@ namespace MMRPGSkillSystem
             Tier4Creatures = Config.Bind("Server config", "Tier4Creatures", "Dragon,Draugr_Elite,BlobElite,Wolf,Fenring,Drake,Hatchling",
                 new ConfigDescription("Tier4Creatures", null,
                         new ConfigurationManagerAttributes { IsAdminOnly = true }));
-            
+
             Tier5Exp = Config.Bind("Server config", "Tier5Exp", 400,
                 new ConfigDescription("Tier5Exp",
                     new AcceptableValueRange<int>(1, int.MaxValue), null,
@@ -202,10 +226,10 @@ namespace MMRPGSkillSystem
             Tier8Creatures = Config.Bind("Server config", "Tier8Creatures", "",
                 new ConfigDescription("Tier8Creatures", null,
                         new ConfigurationManagerAttributes { IsAdminOnly = true }));
-                        Tier1Exp = Config.Bind("Server config", "Tier1Exp", 50,
-                new ConfigDescription("Tier1Exp",
-                    new AcceptableValueRange<int>(1, int.MaxValue), null,
-                         new ConfigurationManagerAttributes { IsAdminOnly = true }));
+            Tier1Exp = Config.Bind("Server config", "Tier1Exp", 50,
+    new ConfigDescription("Tier1Exp",
+        new AcceptableValueRange<int>(1, int.MaxValue), null,
+             new ConfigurationManagerAttributes { IsAdminOnly = true }));
             Tier9Exp = Config.Bind("Server config", "Tier9Exp", 50,
                 new ConfigDescription("Tier9Exp",
                     new AcceptableValueRange<int>(1, int.MaxValue), null,

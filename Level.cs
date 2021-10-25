@@ -19,8 +19,10 @@ namespace MMRPGSkillSystem
             float expMultiplier = MMRPGSkillSystem.ExpMultiplierPerLevel.Value;
             for (int level = 1; level <= MMRPGSkillSystem.MaxLevel.Value; level++)
             {
-                LevelRequirement levelRequirement = new LevelRequirement();
-                levelRequirement.Level = level;
+                LevelRequirement levelRequirement = new LevelRequirement
+                {
+                    Level = level
+                };
 
                 if (level == 1)
                 {
@@ -37,11 +39,11 @@ namespace MMRPGSkillSystem
 
         public static void RaiseExp(Character creature)
         {
-            MonsterExp monster = ExpTable.MonsterExpList.Where(x => x.Name == creature.m_name).FirstOrDefault();
+            MonsterExp monster = ExpTable.MonsterExpList.Where(x => x.Name == creature.gameObject.name).FirstOrDefault();
 
             if (monster == null)
             {
-                Debug.LogError("No MonsterExp for creature: " + creature.m_name);
+                Debug.LogError("No MonsterExp for creature: " + creature.gameObject.name);
                 return;
             }
 
@@ -60,7 +62,8 @@ namespace MMRPGSkillSystem
         }
 
         unsafe public static void AddExp(int exp)
-        {            
+        {
+
             if (!Player.m_localPlayer.m_knownTexts.ContainsKey("playerLevel"))
             {
                 Player.m_localPlayer.m_knownTexts.Add("playerLevel", "1");
@@ -85,7 +88,7 @@ namespace MMRPGSkillSystem
 
             Debug.LogError(Player.m_localPlayer.m_knownTexts["playerExp"]);
 
-            GUI.UpdateExpText();  
+            GUI.UpdateExpText();
         }
 
         private static void PlayerLevelUp(int currentLevel)
@@ -101,6 +104,10 @@ namespace MMRPGSkillSystem
 
         public static long GetMaxExpForCurrentLevel()
         {
+            Player localPlayer = Player.m_localPlayer;
+            if (!localPlayer || localPlayer.IsDead() || (localPlayer.InCutscene() || localPlayer.IsTeleporting()))
+                return 0;
+
             LevelRequirement currentLevelRequirement = LevelRequirementList.First(x => x.Level == long.Parse(Player.m_localPlayer.m_knownTexts["playerLevel"]));
             return currentLevelRequirement.ExpAmount;
         }
@@ -111,7 +118,7 @@ namespace MMRPGSkillSystem
             {
                 Player.m_localPlayer.m_knownTexts.Add("playerLevel", "1");
             }
-            
+
             return Player.m_localPlayer.m_knownTexts["playerLevel"];
         }
 
@@ -125,7 +132,8 @@ namespace MMRPGSkillSystem
         }
 
         public static string GetAvailablePoints()
-        {
+        {           
+
             if (!Player.m_localPlayer.m_knownTexts.ContainsKey("playerAvailablePoints"))
             {
                 Player.m_localPlayer.m_knownTexts.Add("playerAvailablePoints", MMRPGSkillSystem.StartingPoints.Value.ToString());
@@ -134,7 +142,8 @@ namespace MMRPGSkillSystem
         }
 
         public static void AddPoints()
-        {
+        {            
+
             if (!Player.m_localPlayer.m_knownTexts.ContainsKey("playerAvailablePoints"))
             {
                 Player.m_localPlayer.m_knownTexts.Add("playerAvailablePoints", "0");
@@ -148,7 +157,7 @@ namespace MMRPGSkillSystem
         }
 
         public static void RemovePoints()
-        {
+        {              
             int availablePoints = Convert.ToInt32(GetAvailablePoints());
             availablePoints -= 1;
 
@@ -159,12 +168,17 @@ namespace MMRPGSkillSystem
 
         public static int GetSkillLevel(Skill skill)
         {
-            if (!Player.m_localPlayer.m_knownTexts.ContainsKey("player" + skill.ToString()))
+            string value;
+            if (Player.m_localPlayer.m_knownTexts.TryGetValue("player" + skill.ToString(), out value))
+            {
+                return Convert.ToInt32(value);
+
+            } else
             {
                 Player.m_localPlayer.m_knownTexts.Add("player" + skill.ToString(), "1");
             }
 
-            return Convert.ToInt32(Player.m_localPlayer.m_knownTexts["player" + skill.ToString()]);
+            return Convert.ToInt32(Player.m_localPlayer.m_knownTexts["player" + skill.ToString()]); 
         }
     }
 

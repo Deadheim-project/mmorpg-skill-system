@@ -151,8 +151,8 @@ namespace MMRPGSkillSystem
                       color: GUIManager.Instance.ValheimOrange,
                       outline: true,
                       outlineColor: Color.black,
-                      width: 30f,
-                      height: 25f,
+                      width: 35f,
+                      height: 30f,
                       addContentSizeFitter: false);
 
                 MMRPGSkillSystem.menuItems.Add(skill.ToString() + "Text", levelText);
@@ -205,7 +205,7 @@ namespace MMRPGSkillSystem
                      outline: true,
                      outlineColor: Color.black,
                      width: 150f,
-                     height: 20f,
+                     height: 30f,
                      addContentSizeFitter: false);
             MMRPGSkillSystem.menuItems.Add("PlayerPointsAvailableText", pointsAvailableObject);
 
@@ -269,6 +269,120 @@ namespace MMRPGSkillSystem
                 txt.GetComponent<Text>().text = "";
                 SetStrengthAvailableEffectListText(txt);
                 SetAgilityAvailableEffectListText(txt);
+                SetIntelligenceAvailableEffectListText(txt);
+                SetFocusAvailableEffectListText(txt);
+                SetConstitutionAvailableEffectListText(txt);
+            }
+        }
+
+        private static void SetConstitutionAvailableEffectListText(GameObject txt)
+        {
+            int skillLevel = Level.GetSkillLevel(Skill.Constitution);
+
+            if (skillLevel <= 1) return;
+
+            float passiveLifeRegen = (skillLevel / 100f) * (Constitution.PassiveLifeBonus.Value - 1) * 100;
+            float passiveStaminaRegen = (skillLevel / 100f) * (Constitution.PassiveStaminaBonus.Value - 1) * 100;
+
+            txt.GetComponent<Text>().text += "\n Con +" + Math.Round(passiveLifeRegen, 2) + "% Passive life bonus";
+            txt.GetComponent<Text>().text += "\n Con +" + Math.Round(passiveStaminaRegen, 2) + "% Passive stamina bonus";
+
+            if (skillLevel >= 50)
+            {
+                txt.GetComponent<Text>().text += "\n Con 50: +" + Math.Round((Constitution.Level50FoodDuration.Value - 1) * 100, 2) + "% Food duration";
+                txt.GetComponent<Text>().text += "\n Con 50: +" + Math.Round((Constitution.Level50PhysicalDamageReduction.Value - 1) * 100, 2) + "% Physical damage reduction";
+            }
+
+            if (skillLevel >= 100)
+            {
+                txt.GetComponent<Text>().text += "\n Con 100: +" + Constitution.Level100LifeBonus.Value + " Life bonus";
+                txt.GetComponent<Text>().text += "\n Con 100: +" + Math.Round(((Constitution.Level100PhysicalDamageReduction.Value - 1) * 100), 2) + "%  Physical damage reduction";
+            }
+
+            if (skillLevel >= 150)
+            {
+                txt.GetComponent<Text>().text += "\n Con 150: +" + Constitution.Level150BonusStaminaAndLife.Value + " Stamina and life bonus";
+                txt.GetComponent<Text>().text += "\n Con 150: +" + (Constitution.Level150BonusArmor.Value - 1) * 100 + "% Armor bonus";
+            }
+
+            if (skillLevel >= 200)
+            {
+                txt.GetComponent<Text>().text += "\n Con 200: +" + (Constitution.Level200BonusArmor.Value - 1) * 100 + "% Armor bonus";
+                txt.GetComponent<Text>().text += "\n Con 200: +" + (Constitution.Level200PhysicalDamageReduction.Value - 1) * 100 + "% Physical damage reduction";
+            }
+        }
+
+        private static void SetFocusAvailableEffectListText(GameObject txt)
+        {
+            int skillLevel = Level.GetSkillLevel(Skill.Focus);
+
+            if (skillLevel <= 1) return;
+
+            float passiveLifeRegen = (skillLevel / 100f) * (Focus.PassiveLifeRegen.Value - 1) * 100;
+            float passiveStaminaRegen = (skillLevel / 100f) * (Focus.PassiveStaminaRegen.Value - 1) * 100;
+
+            txt.GetComponent<Text>().text += "\n Foc +" + Math.Round(passiveLifeRegen, 2) + "% Passive life regen";
+            txt.GetComponent<Text>().text += "\n Foc +" + Math.Round(passiveStaminaRegen, 2) + "% Passive stamina regen";
+
+            if (skillLevel >= 50)
+            {
+                txt.GetComponent<Text>().text += "\n Foc 50: +" + Math.Round((Focus.Level50ElementalReduction.Value - 1) * 100, 2) + "% Elemental damage reduction";
+                txt.GetComponent<Text>().text += "\n Foc 50: +" + (Focus.Level50StaminaRegen.Value - 1) * 100 + "% Stamina regen";
+            }
+
+            if (skillLevel >= 100)
+            {
+                txt.GetComponent<Text>().text += "\n Foc 100: +" + Focus.Level100StaminaBonus.Value + " Stamina bonus";
+                txt.GetComponent<Text>().text += "\n Foc 100: +" + ((Focus.Level100LifeRegen.Value - 1) * 100) + "% Life regen";
+            }
+
+            if (skillLevel >= 150)
+            {
+                txt.GetComponent<Text>().text += "\n Foc 150: +" + Focus.Level150BuffAndPotionsDuration.Value + " Boss buff and potions duration";
+                txt.GetComponent<Text>().text += "\n Foc 150: +" + (Focus.Level150LifeBonus.Value) + " Life bonus";
+            }
+
+            if (skillLevel >= 200)
+            {
+                txt.GetComponent<Text>().text += "\n Foc 200: +" + (Focus.Level200ElementalReduction.Value - 1) * 100 + "% Elemental damage reduction";
+                txt.GetComponent<Text>().text += "\n Foc 200: +" + (Focus.Level200LifeAndStaminaRegen.Value - 1) *100 + "% Life and stamina regen";
+            }
+        }
+
+        private static void SetIntelligenceAvailableEffectListText(GameObject txt)
+        {
+            int skillLevel = Level.GetSkillLevel(Skill.Intelligence);
+
+            if (skillLevel <= 1) return;
+
+            float passiveMagicDamage = (skillLevel / 100f) * (Intelligence.PassiveMagicDamage.Value - 1) * 100;
+            float passiveQuickLearner = (skillLevel / 100f) * (Intelligence.PassiveQuickLearner.Value - 1) *100;
+
+            txt.GetComponent<Text>().text += "\n Int +" + Math.Round(passiveMagicDamage, 2) + "% Magic damage";
+            txt.GetComponent<Text>().text += "\n Int +" + Math.Round(passiveQuickLearner, 2) + "% Quick learner";
+
+            if (skillLevel >= 50)
+            {
+                txt.GetComponent<Text>().text += "\n Int 50: +" + Math.Round((Intelligence.Level50MoveSpeed.Value - 1) * 100, 2) + "% move speed";
+                txt.GetComponent<Text>().text += "\n Int 50: +" + (Intelligence.Level50MagicDamage.Value - 1) * 100 + "% Magic damage";
+            }                                        
+                                                     
+            if (skillLevel >= 100)                   
+            {                                        
+                txt.GetComponent<Text>().text += "\n Int 100: -" + Intelligence.Level100BuffAndPotionsCooldown.Value + "% Boss buff and potions cd";
+                txt.GetComponent<Text>().text += "\n Int 100: +" + ((Intelligence.Level100QuickLearner.Value - 1) * 100) + "% Quick learner";
+            }                                            
+                                                         
+            if (skillLevel >= 150)                       
+            {                                            
+                txt.GetComponent<Text>().text += "\n Int 150: +" + Intelligence.Level150AllSkillBonus.Value + " all skills points";
+                txt.GetComponent<Text>().text += "\n Int 150: +" + (Intelligence.Level150MagicDamage.Value - 1) * 100 + "% Magic damage";
+            }
+
+            if (skillLevel >= 200)
+            {
+                txt.GetComponent<Text>().text += "\n Int 200: +" + (Intelligence.Level200Atackspeed.Value - 1) * 100 + "% Attack speed";
+                txt.GetComponent<Text>().text += "\n Int 200: +" + Intelligence.Level200ComfortBonus.Value + " comfort";
             }
         }
 
@@ -278,35 +392,35 @@ namespace MMRPGSkillSystem
 
             if (skillLevel <= 1) return;
 
-            float bowPolearmMultiplier = (skillLevel / 100f) * Agility.PassiveBowPolearmMultiplier;
-            float spearKnifeMultiplier = (skillLevel / 100f) * Agility.PassiveSpearKnifeMultiplier;
+            float bowPolearmMultiplier = (skillLevel / 100f) * Agility.PassiveBowPolearmMultiplier.Value;
+            float spearKnifeMultiplier = (skillLevel / 100f) * Agility.PassiveSpearKnifeMultiplier.Value;
 
-            txt.GetComponent<Text>().text += "\n +" + bowPolearmMultiplier + "% Bow and polearm damage";
-            txt.GetComponent<Text>().text += "\n +" + spearKnifeMultiplier + "% Knife and spear damage";
+            txt.GetComponent<Text>().text += "\n Agi +" + bowPolearmMultiplier + "% Bow and polearm damage";
+            txt.GetComponent<Text>().text += "\n Agi +" + spearKnifeMultiplier + "% Knife and spear damage";
 
             if (skillLevel >= 50)
             {
-                txt.GetComponent<Text>().text += "\n Agility 50: +5% move speed";
-                txt.GetComponent<Text>().text += "\n Agility 50: +10% backstab damage";
-            }
-
-            if (skillLevel >= 100)
-            {
-                txt.GetComponent<Text>().text += "\n Agility 100: +10% Bow and knife damage";
-                txt.GetComponent<Text>().text += "\n Agility 100: -10% Run and Jump stamina";
-            }
-
-            if (skillLevel >= 150)
-            {
-                txt.GetComponent<Text>().text += "\n Agility 150: +12% move speed";
-                txt.GetComponent<Text>().text += "\n Agility 150: +20% Spears and polearm damage";
-            }
-
-            if (skillLevel >= 200)
-            {
-                txt.GetComponent<Text>().text += "\n Agility 200: +20% backstab";
-                txt.GetComponent<Text>().text += "\n Agility 200: +10% movespeed";
-                txt.GetComponent<Text>().text += "\n Agility 200: +20% Knives and Bows damage";
+                txt.GetComponent<Text>().text += "\n Agi 50: +" + Math.Round((Agility.Level50RunSpeed.Value - 1) * 100,2) + "% move speed";
+                txt.GetComponent<Text>().text += "\n Agi 50: +" + (Agility.Level50Backstab.Value - 1) * 100 + "% backstab damage";
+            }                                            
+                                                         
+            if (skillLevel >= 100)                       
+            {                                            
+                txt.GetComponent<Text>().text += "\n Agi 100: +" + (Agility.Level100BowKnivesDamage.Value - 1) * 100 + "% Bow and knife damage";
+                txt.GetComponent<Text>().text += "\n Agi 100: +" + (Agility.Level100JumAndRunStaminaReduction.Value - 1) * 100 + "% Run and Jump stamina";
+             }                                            
+                                                         
+            if (skillLevel >= 150)                       
+            {                                            
+                txt.GetComponent<Text>().text += "\n Agi 150: +" + (Agility.Level150RunSpeed.Value - 1) * 100 + "% move speed";
+                txt.GetComponent<Text>().text += "\n Agi 150:  +" + (Agility.Level150SpearAndPolearmDamage.Value - 1) * 100 + "% Spears and polearm damage";
+            }                                            
+                                                         
+            if (skillLevel >= 200)                       
+            {                                            
+                txt.GetComponent<Text>().text += "\n Agi 200: +" + (Agility.Level200Backstab.Value - 1) * 100 + "% backstab";
+                txt.GetComponent<Text>().text += "\n Agi 200: +" + (Agility.Level200RunSpeed.Value- 1) * 100 + "% movespeed";
+                txt.GetComponent<Text>().text += "\n Agi 200: +" + (Agility.Level200BowKnivesDamage.Value - 1) * 100 + "% Knives and Bows damage";
             }
         }
 
@@ -316,37 +430,37 @@ namespace MMRPGSkillSystem
 
             if (skillLevel <= 1) return;
 
-            float twoHandedMultiplier = (skillLevel / 100f) * Strength.PassiveTwoHandedMultiplier;
-            float oneHandedMultiplier = (skillLevel / 100f) * Strength.PassiveOneHandedMultiplier;
-            float chopAndPickaxeMultiplier = (skillLevel / 100f) * Strength.PassiveChopAndPickaxeMultiplier;
+            float twoHandedMultiplier = (skillLevel / 100f) * Strength.PassiveTwoHandedMultiplier.Value;
+            float oneHandedMultiplier = (skillLevel / 100f) * Strength.PassiveOneHandedMultiplier.Value;
+            float chopAndPickaxeMultiplier = (skillLevel / 100f) * Strength.PassiveChopAndPickaxeMultiplier.Value;
 
-            txt.GetComponent<Text>().text += "\n +" + twoHandedMultiplier + "% Two-handed damage";
-            txt.GetComponent<Text>().text += "\n +" + oneHandedMultiplier + "% One-handed damage";
-            txt.GetComponent<Text>().text += "\n +" + chopAndPickaxeMultiplier + "% Chop and pickaxe damage";
+            txt.GetComponent<Text>().text += "\n Str +" + twoHandedMultiplier + "% Two-handed damage";
+            txt.GetComponent<Text>().text += "\n Str +" + oneHandedMultiplier + "% One-handed damage";
+            txt.GetComponent<Text>().text += "\n Str +" + chopAndPickaxeMultiplier + "% Chop and pickaxe damage";
 
             if (skillLevel >= 50)
             {
-                txt.GetComponent<Text>().text += "\n Strength 50: +10% One-handed damage";
-                txt.GetComponent<Text>().text += "\n Strength 50: +50 carry weight";
+                txt.GetComponent<Text>().text += "\n Str 50: +" + (Strength.Level50OneHandedDamage.Value - 1) * 100 + "% One-handed damage";
+                txt.GetComponent<Text>().text += "\n Str 50: +" + Strength.Level50CarryWeight.Value + " carry weight";
             }
 
             if (skillLevel >= 100)
             {
-                txt.GetComponent<Text>().text += "\n Strength 100: +20% Two-handed damage";
-                txt.GetComponent<Text>().text += "\n Strength 100: -10% Attack stamina";
+                txt.GetComponent<Text>().text += "\n Str 100:  +" + (Strength.Level100TwoHandedDamage.Value - 1) * 100 + "% Two-handed damage";
+                txt.GetComponent<Text>().text += "\n Str 100:  -" + (Strength.Level100ReduceAttackStamina.Value - 1) * 100 + "% Attack stamina";
             }
 
             if (skillLevel >= 150)
             {
-                txt.GetComponent<Text>().text += "\n Strength 150: +10% One-handed speed";
-                txt.GetComponent<Text>().text += "\n Strength 150: +20% Sword damage";
-                txt.GetComponent<Text>().text += "\n Strength 150: +50 carry weight";
+                txt.GetComponent<Text>().text += "\n Str 150: +" + (Strength.Level150SpeedMultiplierOneHanded.Value - 1) * 100 + " One-handed speed";
+                txt.GetComponent<Text>().text += "\n Str 150:  +" + (Strength.Level150SwordsDamage.Value - 1) * 100 + "% Sword damage";
+                txt.GetComponent<Text>().text += "\n Str 150:  +" + Strength.Level150CarryWeight.Value + "carry weight";
             }
 
             if (skillLevel >= 200)
             {
-                txt.GetComponent<Text>().text += "\n Strength 200: +15% damage";
-                txt.GetComponent<Text>().text += "\n Strength 200: +5% Two-handed speed";
+                txt.GetComponent<Text>().text += "\n Str 200: +" + (Strength.Level200OneTwoHandedDamage.Value - 1) * 100 + "% damage";
+                txt.GetComponent<Text>().text += "\n Str 200: +" + Math.Round((Strength.Level200SpeedMultiplierTwoHanded.Value - 1) * 100, 2) + "% Two-handed speed";
             }
         }
 

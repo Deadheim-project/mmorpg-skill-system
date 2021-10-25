@@ -130,6 +130,9 @@
     <Compile Include="GUI.cs" />
     <Compile Include="MMRPGSkillSystem.cs" />
     <Compile Include="PlayerSkills\Agility.cs" />
+    <Compile Include="PlayerSkills\Constitution.cs" />
+    <Compile Include="PlayerSkills\Focus.cs" />
+    <Compile Include="PlayerSkills\Intelligence.cs" />
     <Compile Include="PlayerSkills\SkillManager.cs" />
     <Compile Include="PlayerSkills\Strength.cs" />
     <Compile Include="Patches.cs" />

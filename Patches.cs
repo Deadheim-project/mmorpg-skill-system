@@ -7,22 +7,26 @@ namespace MMRPGSkillSystem
     [HarmonyPatch]
     public class Patches
     {
-        static bool listInitiliazed = false;
         [HarmonyPostfix]
         [HarmonyPatch(typeof(Player), "OnSpawned")]
         private static void OnSpawnedPostfix()
         {
-            if (listInitiliazed) return;
+            if (MMRPGSkillSystem.listInitiliazed) return;
             Level.InitLevelRequirementList();
             ExpTable.InitMonsterExpList();
-            listInitiliazed = true;
+            MMRPGSkillSystem.listInitiliazed = true;
         }
 
-        [HarmonyPostfix]
-        [HarmonyPatch(typeof(Character), "OnDeath")]
-        private static void RaiseExpPostfix(Character __instance)
+        [HarmonyPatch(typeof(Character), nameof(Character.ApplyDamage))]
+        public static class ApplyDamage
         {
-            if (__instance) Level.RaiseExp(__instance);
+            public static void Postfix(Character __instance, HitData hit)
+            {
+                if (__instance.GetHealth() <= 0f && hit.GetAttacker() && hit.GetAttacker().IsPlayer())
+                {
+                    Level.RaiseExp(__instance);
+                }
+            }
         }
 
         [HarmonyPatch(typeof(ZNet), "Shutdown")]
@@ -35,10 +39,11 @@ namespace MMRPGSkillSystem
                     GameObject gameObject = obj.Value;
                     Object.Destroy(gameObject);
                 }
+
                 MMRPGSkillSystem.menuItems = new Dictionary<string, GameObject>();
                 Object.Destroy(MMRPGSkillSystem.Menu);
                 MMRPGSkillSystem.Menu = null;
-                listInitiliazed = false;
+                MMRPGSkillSystem.listInitiliazed = false;
             }
         }
     }
