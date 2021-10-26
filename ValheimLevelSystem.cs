@@ -13,10 +13,10 @@ namespace MMRPGSkillSystem
     [BepInPlugin(PluginGUID, PluginGUID, Version)]
     [BepInDependency(Jotunn.Main.ModGuid)]
     [NetworkCompatibility(CompatibilityLevel.EveryoneMustHaveMod, VersionStrictness.Minor)]
-    public class MMRPGSkillSystem : BaseUnityPlugin
+    public class ValheimLevelSystem : BaseUnityPlugin
     {
-        public const string PluginGUID = "Detalhes.MMRPGSkillSystem";
-        public const string Name = "MMRPGSkillSystem";
+        public const string PluginGUID = "Detalhes.ValheimLevelSystem";
+        public const string Name = "ValheimLevelSystem";
         public const string Version = "1.0.0";
 
         public static bool listInitiliazed = false;
@@ -37,6 +37,7 @@ namespace MMRPGSkillSystem
         public static ConfigEntry<int> StartingPoints;
         public static ConfigEntry<int> MaxLevel;
         public static ConfigEntry<int> PointsPerLevel;
+        public static ConfigEntry<int> LevelToStartGivingExtraPoint;
         public static ConfigEntry<int> BaseExpPerLevel;
         public static ConfigEntry<float> ExpMultiplierPerLevel;
         public static ConfigEntry<KeyCode> KeyboardShortcut;
@@ -108,12 +109,6 @@ namespace MMRPGSkillSystem
 
         public void InitConfigs()
         {
-            Strength.InitConfigs(Config);
-            Focus.InitConfigs(Config);
-            Agility.InitConfigs(Config);
-            Intelligence.InitConfigs(Config);
-            Constitution.InitConfigs(Config);
-
             RequiresTokenToResetSkill = Config.Bind("Server config", "RequiresTokenToResetSkill", false,
                 new ConfigDescription("RequiresTokenToResetSkill", null,
                          new ConfigurationManagerAttributes { IsAdminOnly = true }));
@@ -128,27 +123,31 @@ namespace MMRPGSkillSystem
                    new AcceptableValueRange<int>(1, 100), null,
                         new ConfigurationManagerAttributes { IsAdminOnly = true }));
 
+            PointsPerLevel = Config.Bind("Server config", "PointsPerLevel", 5,
+               new ConfigDescription("PointsPerLevel",
+                   new AcceptableValueRange<int>(1, int.MaxValue), null,
+                       new ConfigurationManagerAttributes { IsAdminOnly = true }));
 
+            LevelToStartGivingExtraPoint = Config.Bind("Server config", "LevelToStartGivingExtraPoint", 50,
+                   new ConfigDescription("LevelToStartGivingExtraPoint",
+                   new AcceptableValueRange<int>(1, int.MaxValue), null,
+                   new ConfigurationManagerAttributes { IsAdminOnly = true }));
+            
             MaxLevel = Config.Bind("Server config", "MaxLevel", 100,
                 new ConfigDescription("MaxLevel",
                     new AcceptableValueRange<int>(1, 1000), null,
                         new ConfigurationManagerAttributes { IsAdminOnly = true }));
 
-            BaseExpPerLevel = Config.Bind("Server config", "BaseExpPerLevel", 1000,
+            BaseExpPerLevel = Config.Bind("Server config", "BaseExpPerLevel", 500,
                 new ConfigDescription("Last level exp + BaseExpPerlevel * ExpMultiplierPerlevel is exp requirement formula",
                     new AcceptableValueRange<int>(1, int.MaxValue), null,
                         new ConfigurationManagerAttributes { IsAdminOnly = true }));
 
 
-            ExpMultiplierPerLevel = Config.Bind("Server config", "ExpMultiplierPerLevel", 1.05f,
+            ExpMultiplierPerLevel = Config.Bind("Server config", "ExpMultiplierPerLevel", 1.03f,
                 new ConfigDescription("Last level exp + BaseExpPerlevel * ExpMultiplierPerlevel is exp requirement formula",
                     new AcceptableValueRange<float>(1, 100), null,
                          new ConfigurationManagerAttributes { IsAdminOnly = true }));
-
-            PointsPerLevel = Config.Bind("Server config", "PointsPerLevel", 5,
-                new ConfigDescription("PointsPerLevel",
-                    new AcceptableValueRange<int>(1, int.MaxValue), null,
-                        new ConfigurationManagerAttributes { IsAdminOnly = true }));
 
             KeyboardShortcut = Config.Bind("Client config", "KeyboardShortcutConfig",
                 KeyCode.Insert,
@@ -226,10 +225,7 @@ namespace MMRPGSkillSystem
             Tier8Creatures = Config.Bind("Server config", "Tier8Creatures", "",
                 new ConfigDescription("Tier8Creatures", null,
                         new ConfigurationManagerAttributes { IsAdminOnly = true }));
-            Tier1Exp = Config.Bind("Server config", "Tier1Exp", 50,
-    new ConfigDescription("Tier1Exp",
-        new AcceptableValueRange<int>(1, int.MaxValue), null,
-             new ConfigurationManagerAttributes { IsAdminOnly = true }));
+
             Tier9Exp = Config.Bind("Server config", "Tier9Exp", 50,
                 new ConfigDescription("Tier9Exp",
                     new AcceptableValueRange<int>(1, int.MaxValue), null,
@@ -247,6 +243,12 @@ namespace MMRPGSkillSystem
             Tier10Creatures = Config.Bind("Server config", "Tier10Creatures", "",
                 new ConfigDescription("Tier10Creatures", null,
                         new ConfigurationManagerAttributes { IsAdminOnly = true }));
+
+            Strength.InitConfigs(Config);
+            Focus.InitConfigs(Config);
+            Agility.InitConfigs(Config);
+            Intelligence.InitConfigs(Config);
+            Constitution.InitConfigs(Config);
         }
     }
 }

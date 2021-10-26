@@ -11,7 +11,7 @@ namespace MMRPGSkillSystem
             var inventory = Player.m_localPlayer.GetInventory();
             ItemDrop.ItemData resetToken = inventory.m_inventory.FirstOrDefault(x => x.m_dropPrefab.name.ToLower() == "resettoken");
 
-            if (resetToken == null && MMRPGSkillSystem.RequiresTokenToResetSkill.Value)
+            if (resetToken == null && ValheimLevelSystem.RequiresTokenToResetSkill.Value)
             {
                 Player.m_localPlayer.Message(MessageHud.MessageType.Center, "You need a Reset token", 0, null);
                 GUIConfirm.DestroyMenu();
@@ -24,10 +24,10 @@ namespace MMRPGSkillSystem
                 GUI.UpdateSkillLevelText(skill.ToString(), "1");
             }
 
-            int level = Convert.ToInt32(Level.GetLevel());
-            Player.m_localPlayer.m_knownTexts["playerAvailablePoints"] = (level * MMRPGSkillSystem.PointsPerLevel.Value + MMRPGSkillSystem.StartingPoints.Value).ToString();
+            int level = Convert.ToInt32(Level.GetLevel()) -1;
+            Player.m_localPlayer.m_knownTexts["playerAvailablePoints"] = (level * ValheimLevelSystem.PointsPerLevel.Value + ValheimLevelSystem.StartingPoints.Value).ToString();
 
-            if (MMRPGSkillSystem.RequiresTokenToResetSkill.Value) inventory.RemoveOneItem(resetToken);
+            if (ValheimLevelSystem.RequiresTokenToResetSkill.Value) inventory.RemoveOneItem(resetToken);
 
             GUI.UpdatePlayerPointsAvailable();
             GUIConfirm.DestroyMenu();

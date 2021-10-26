@@ -27,14 +27,14 @@ namespace MMRPGSkillSystem
                                         width: 300,
                                         height: 220,
                                         draggable: true);
-                MMRPGSkillSystem.Menu.SetActive(false);
+                ValheimLevelSystem.Menu.SetActive(false);
 
                 GameObject textObject = GUIManager.Instance.CreateText(
                     text: "Reset skills",
                     parent: menu.transform,
                     anchorMin: new Vector2(0.5f, 1f),
                     anchorMax: new Vector2(0.5f, 1f),
-                    position: new Vector2(0f, -40f),
+                    position: new Vector2(0f, -60f),
                     font: GUIManager.Instance.AveriaSerifBold,
                     fontSize: 25,
                     color: GUIManager.Instance.ValheimOrange,
@@ -71,7 +71,7 @@ namespace MMRPGSkillSystem
                 buttonNo.onClick.AddListener(DestroyMenu);
             }
 
-            bool state = !MMRPGSkillSystem.Menu.activeSelf;
+            bool state = !ValheimLevelSystem.Menu.activeSelf;
 
             menu.SetActive(state);
         }

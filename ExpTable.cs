@@ -12,16 +12,16 @@ namespace MMRPGSkillSystem
         {
             MonsterExpList = new List<MonsterExp>();
 
-            MMRPGSkillSystem.Tier1Creatures.Value.Split(',').ToList().ForEach(x => MonsterExpList.Add(new MonsterExp(x, MMRPGSkillSystem.Tier1Exp.Value, 1)));        
-            MMRPGSkillSystem.Tier2Creatures.Value.Split(',').ToList().ForEach(x => MonsterExpList.Add(new MonsterExp(x, MMRPGSkillSystem.Tier2Exp.Value, 2)));        
-            MMRPGSkillSystem.Tier3Creatures.Value.Split(',').ToList().ForEach(x => MonsterExpList.Add(new MonsterExp(x, MMRPGSkillSystem.Tier3Exp.Value, 3)));        
-            MMRPGSkillSystem.Tier4Creatures.Value.Split(',').ToList().ForEach(x => MonsterExpList.Add(new MonsterExp(x, MMRPGSkillSystem.Tier4Exp.Value, 4)));        
-            MMRPGSkillSystem.Tier5Creatures.Value.Split(',').ToList().ForEach(x => MonsterExpList.Add(new MonsterExp(x, MMRPGSkillSystem.Tier5Exp.Value, 5)));        
-            MMRPGSkillSystem.Tier6Creatures.Value.Split(',').ToList().ForEach(x => MonsterExpList.Add(new MonsterExp(x, MMRPGSkillSystem.Tier6Exp.Value, 6)));        
-            MMRPGSkillSystem.Tier7Creatures.Value.Split(',').ToList().ForEach(x => MonsterExpList.Add(new MonsterExp(x, MMRPGSkillSystem.Tier7Exp.Value, 7)));        
-            MMRPGSkillSystem.Tier8Creatures.Value.Split(',').ToList().ForEach(x => MonsterExpList.Add(new MonsterExp(x, MMRPGSkillSystem.Tier8Exp.Value, 8)));        
-            MMRPGSkillSystem.Tier9Creatures.Value.Split(',').ToList().ForEach(x => MonsterExpList.Add(new MonsterExp(x, MMRPGSkillSystem.Tier9Exp.Value, 9)));        
-            MMRPGSkillSystem.Tier10Creatures.Value.Split(',').ToList().ForEach(x => MonsterExpList.Add(new MonsterExp(x, MMRPGSkillSystem.Tier10Exp.Value, 10)));
+            ValheimLevelSystem.Tier1Creatures.Value.Split(',').ToList().ForEach(x => MonsterExpList.Add(new MonsterExp(x, ValheimLevelSystem.Tier1Exp.Value, 1)));        
+            ValheimLevelSystem.Tier2Creatures.Value.Split(',').ToList().ForEach(x => MonsterExpList.Add(new MonsterExp(x, ValheimLevelSystem.Tier2Exp.Value, 2)));        
+            ValheimLevelSystem.Tier3Creatures.Value.Split(',').ToList().ForEach(x => MonsterExpList.Add(new MonsterExp(x, ValheimLevelSystem.Tier3Exp.Value, 3)));        
+            ValheimLevelSystem.Tier4Creatures.Value.Split(',').ToList().ForEach(x => MonsterExpList.Add(new MonsterExp(x, ValheimLevelSystem.Tier4Exp.Value, 4)));        
+            ValheimLevelSystem.Tier5Creatures.Value.Split(',').ToList().ForEach(x => MonsterExpList.Add(new MonsterExp(x, ValheimLevelSystem.Tier5Exp.Value, 5)));        
+            ValheimLevelSystem.Tier6Creatures.Value.Split(',').ToList().ForEach(x => MonsterExpList.Add(new MonsterExp(x, ValheimLevelSystem.Tier6Exp.Value, 6)));        
+            ValheimLevelSystem.Tier7Creatures.Value.Split(',').ToList().ForEach(x => MonsterExpList.Add(new MonsterExp(x, ValheimLevelSystem.Tier7Exp.Value, 7)));        
+            ValheimLevelSystem.Tier8Creatures.Value.Split(',').ToList().ForEach(x => MonsterExpList.Add(new MonsterExp(x, ValheimLevelSystem.Tier8Exp.Value, 8)));        
+            ValheimLevelSystem.Tier9Creatures.Value.Split(',').ToList().ForEach(x => MonsterExpList.Add(new MonsterExp(x, ValheimLevelSystem.Tier9Exp.Value, 9)));        
+            ValheimLevelSystem.Tier10Creatures.Value.Split(',').ToList().ForEach(x => MonsterExpList.Add(new MonsterExp(x, ValheimLevelSystem.Tier10Exp.Value, 10)));
 
             MonsterExpList.ForEach(x => Debug.LogError(x.Name + x.ExpAmount));
         }

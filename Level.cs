@@ -15,9 +15,9 @@ namespace MMRPGSkillSystem
         public static void InitLevelRequirementList()
         {
             LevelRequirementList = new List<LevelRequirement>();
-            int baseExpLevelPerLevel = MMRPGSkillSystem.BaseExpPerLevel.Value;
-            float expMultiplier = MMRPGSkillSystem.ExpMultiplierPerLevel.Value;
-            for (int level = 1; level <= MMRPGSkillSystem.MaxLevel.Value; level++)
+            int baseExpLevelPerLevel = ValheimLevelSystem.BaseExpPerLevel.Value;
+            float expMultiplier = ValheimLevelSystem.ExpMultiplierPerLevel.Value;
+            for (int level = 1; level <= ValheimLevelSystem.MaxLevel.Value; level++)
             {
                 LevelRequirement levelRequirement = new LevelRequirement
                 {
@@ -55,7 +55,7 @@ namespace MMRPGSkillSystem
             int nearPlayers = Player.GetPlayersInRangeXZ(Player.m_localPlayer.transform.position, rangeToDivideExp);
 
             Debug.LogError("nearPlayers: " + nearPlayers);
-            exp *= MMRPGSkillSystem.ExpRate.Value;
+            exp *= ValheimLevelSystem.ExpRate.Value;
             exp /= nearPlayers;
 
             AddExp(exp);
@@ -136,7 +136,7 @@ namespace MMRPGSkillSystem
 
             if (!Player.m_localPlayer.m_knownTexts.ContainsKey("playerAvailablePoints"))
             {
-                Player.m_localPlayer.m_knownTexts.Add("playerAvailablePoints", MMRPGSkillSystem.StartingPoints.Value.ToString());
+                Player.m_localPlayer.m_knownTexts.Add("playerAvailablePoints", ValheimLevelSystem.StartingPoints.Value.ToString());
             }
             return Player.m_localPlayer.m_knownTexts["playerAvailablePoints"];
         }
@@ -150,7 +150,9 @@ namespace MMRPGSkillSystem
             }
 
             int availablePoints = Convert.ToInt32(GetAvailablePoints());
-            availablePoints += MMRPGSkillSystem.PointsPerLevel.Value;
+            availablePoints += ValheimLevelSystem.PointsPerLevel.Value;
+
+            if (Convert.ToInt32(Level.GetLevel()) >= ValheimLevelSystem.LevelToStartGivingExtraPoint.Value) availablePoints += 1;
 
             Player.m_localPlayer.m_knownTexts["playerAvailablePoints"] = availablePoints.ToString();
             GUI.UpdatePlayerPointsAvailable();

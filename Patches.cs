@@ -11,10 +11,10 @@ namespace MMRPGSkillSystem
         [HarmonyPatch(typeof(Player), "OnSpawned")]
         private static void OnSpawnedPostfix()
         {
-            if (MMRPGSkillSystem.listInitiliazed) return;
+            if (ValheimLevelSystem.listInitiliazed) return;
             Level.InitLevelRequirementList();
             ExpTable.InitMonsterExpList();
-            MMRPGSkillSystem.listInitiliazed = true;
+            ValheimLevelSystem.listInitiliazed = true;
         }
 
         [HarmonyPatch(typeof(Character), nameof(Character.ApplyDamage))]
@@ -34,16 +34,16 @@ namespace MMRPGSkillSystem
         {
             private static void Postfix()
             {
-                foreach (var obj in MMRPGSkillSystem.menuItems)
+                foreach (var obj in ValheimLevelSystem.menuItems)
                 {
                     GameObject gameObject = obj.Value;
                     Object.Destroy(gameObject);
                 }
 
-                MMRPGSkillSystem.menuItems = new Dictionary<string, GameObject>();
-                Object.Destroy(MMRPGSkillSystem.Menu);
-                MMRPGSkillSystem.Menu = null;
-                MMRPGSkillSystem.listInitiliazed = false;
+                ValheimLevelSystem.menuItems = new Dictionary<string, GameObject>();
+                Object.Destroy(ValheimLevelSystem.Menu);
+                ValheimLevelSystem.Menu = null;
+                ValheimLevelSystem.listInitiliazed = false;
             }
         }
     }

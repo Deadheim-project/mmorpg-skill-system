@@ -115,8 +115,8 @@ namespace MMRPGSkillSystem.PlayerSkills
                 skillLevel = Level.GetSkillLevel(Skill.Constitution);
                 if (skillLevel == 1) return;
 
-                float lifeBonus = ((skillLevel / 100f) * PassiveLifeBonus.Value);
-                float staminaBonus = ((skillLevel / 100f) * PassiveStaminaBonus.Value);
+                float lifeBonus = 1 + (skillLevel / 100f) * (PassiveLifeBonus.Value - 1);
+                float staminaBonus = 1 + (skillLevel / 100f) * (Constitution.PassiveStaminaBonus.Value - 1);
 
                 stamina *= staminaBonus;
                 hp *= lifeBonus;
@@ -138,7 +138,7 @@ namespace MMRPGSkillSystem.PlayerSkills
                 skillLevel = Level.GetSkillLevel(Skill.Constitution);
                 if (skillLevel == 1) return;
 
-                float lifeBonus = ((skillLevel / 100f) * PassiveLifeBonus.Value);
+                float lifeBonus = 1 + (skillLevel / 100f) * (PassiveLifeBonus.Value - 1);
 
                 __result *= lifeBonus;
                 if (skillLevel >= 100) __result += Level100LifeBonus.Value;
@@ -160,7 +160,7 @@ namespace MMRPGSkillSystem.PlayerSkills
 
                 if (skillLevel < 50) return;
 
-                if (item.m_shared.m_itemType == ItemDrop.ItemData.ItemType.Consumable && !MMRPGSkillSystem.PotionToReduceCooldownNameList.Contains(item.m_dropPrefab.name))
+                if (item.m_shared.m_itemType == ItemDrop.ItemData.ItemType.Consumable && !ValheimLevelSystem.PotionToReduceCooldownNameList.Contains(item.m_dropPrefab.name))
                 {
                     item.m_shared.m_consumeStatusEffect.m_ttl *= Level50FoodDuration.Value;
                 };

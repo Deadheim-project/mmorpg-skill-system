@@ -58,7 +58,7 @@ namespace MMRPGSkillSystem.PlayerSkills
 
             Level200ElementalReduction = config.Bind("Focus Server config", "Level200ElementalReduction", 1.5f,
                     new ConfigDescription("Level200ElementalReduction", null, null,
-                    new ConfigurationManagerAttributes { IsAdminOnly = true }));  
+                    new ConfigurationManagerAttributes { IsAdminOnly = true }));
         }
 
         [HarmonyPatch(typeof(SEMan), nameof(SEMan.ModifyStaminaRegen))]
@@ -88,7 +88,8 @@ namespace MMRPGSkillSystem.PlayerSkills
 
                 skillLevel = Level.GetSkillLevel(Skill.Focus);
 
-                var regenAmount = (skillLevel / 100f) * PassiveLifeRegen.Value;
+                var regenAmount = 1f;
+                regenAmount += (skillLevel / 100f) * (PassiveLifeRegen.Value - 1);
 
                 if (skillLevel >= 100) regenAmount += Level100LifeRegen.Value - 1;
                 if (skillLevel >= 200) regenAmount += Level200LifeAndStaminaRegen.Value - 1;
@@ -126,7 +127,7 @@ namespace MMRPGSkillSystem.PlayerSkills
             }
         }
 
-            [HarmonyPatch(typeof(SEMan), nameof(SEMan.ModifyHealthRegen))]
+        [HarmonyPatch(typeof(SEMan), nameof(SEMan.ModifyHealthRegen))]
         public static class ModifyHealthRegen_SEMan_ModifyHealthRegen_Patch
         {
             public static void Postfix(SEMan __instance, ref float regenMultiplier)
@@ -158,7 +159,7 @@ namespace MMRPGSkillSystem.PlayerSkills
 
                 if (skillLevel < 150) return;
 
-                if (MMRPGSkillSystem.PotionToIncreaseTimeNameList.Contains(item.m_dropPrefab.name))
+                if (ValheimLevelSystem.PotionToIncreaseTimeNameList.Contains(item.m_dropPrefab.name))
                 {
                     float ttl = item.m_shared.m_consumeStatusEffect.m_ttl;
                     item.m_shared.m_consumeStatusEffect.m_ttl = ttl + (ttl / 100f * Level150BuffAndPotionsDuration.Value);

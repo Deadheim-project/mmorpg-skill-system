@@ -91,7 +91,7 @@ namespace MMRPGSkillSystem.PlayerSkills
                     __result.m_spirit *= bowPolearmMultiplier;
                 }
 
-                if (__instance.m_shared.m_skillType == Skills.SkillType.Polearms || __instance.m_shared.m_skillType == Skills.SkillType.Knives)
+                if (__instance.m_shared.m_skillType == Skills.SkillType.Spears || __instance.m_shared.m_skillType == Skills.SkillType.Knives)
                 {
                     __result.m_blunt *= spearKnifeMultiplier;
                     __result.m_slash *= spearKnifeMultiplier;

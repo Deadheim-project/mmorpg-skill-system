@@ -235,7 +235,7 @@ namespace MMRPGSkillSystem.PlayerSkills
 
                 if (skillLevel < 100) return;
 
-                if (MMRPGSkillSystem.PotionToReduceCooldownNameList.Contains(item.m_dropPrefab.name))
+                if (ValheimLevelSystem.PotionToReduceCooldownNameList.Contains(item.m_dropPrefab.name))
                 {
                     float ttl = item.m_shared.m_consumeStatusEffect.m_ttl;
                     item.m_shared.m_consumeStatusEffect.m_ttl = ttl - (ttl / 100f * Level100BuffAndPotionsCooldown.Value);

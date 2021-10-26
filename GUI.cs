@@ -13,7 +13,7 @@ namespace MMRPGSkillSystem
     {
         public static void ToggleMenu()
         {
-            if (!MMRPGSkillSystem.Menu && Player.m_localPlayer)
+            if (!ValheimLevelSystem.Menu && Player.m_localPlayer)
             {
                 if (GUIManager.Instance == null)
                 {
@@ -30,21 +30,21 @@ namespace MMRPGSkillSystem
                 LoadMenu();
             }
 
-            bool state = !MMRPGSkillSystem.Menu.activeSelf;
+            bool state = !ValheimLevelSystem.Menu.activeSelf;
 
-            MMRPGSkillSystem.Menu.SetActive(state);
+            ValheimLevelSystem.Menu.SetActive(state);
         }
 
         public static void DestroyMenu()
         {
-            MMRPGSkillSystem.Menu.SetActive(false);
+            ValheimLevelSystem.Menu.SetActive(false);
         }
 
         public static void LoadMenu()
         {
             if (Player.m_localPlayer == null) return;
 
-            MMRPGSkillSystem.Menu = GUIManager.Instance.CreateWoodpanel(
+            ValheimLevelSystem.Menu = GUIManager.Instance.CreateWoodpanel(
                                                                        parent: GUIManager.CustomGUIFront.transform,
                                                                        anchorMin: new Vector2(0.5f, 0.5f),
                                                                        anchorMax: new Vector2(0.5f, 0.5f),
@@ -52,9 +52,9 @@ namespace MMRPGSkillSystem
                                                                        width: 400,
                                                                        height: 700,
                                                                        draggable: true);
-            MMRPGSkillSystem.Menu.SetActive(false);
+            ValheimLevelSystem.Menu.SetActive(false);
 
-            GameObject scrollView = GUIManager.Instance.CreateScrollView(parent: MMRPGSkillSystem.Menu.transform,
+            GameObject scrollView = GUIManager.Instance.CreateScrollView(parent: ValheimLevelSystem.Menu.transform,
                     showHorizontalScrollbar: false,
                     showVerticalScrollbar: true,
                     handleSize: 8f,
@@ -73,7 +73,7 @@ namespace MMRPGSkillSystem
 
             GameObject textObject = GUIManager.Instance.CreateText(
                 text: Player.m_localPlayer.GetPlayerName(),
-                parent: MMRPGSkillSystem.Menu.transform,
+                parent: ValheimLevelSystem.Menu.transform,
                 anchorMin: new Vector2(0.5f, 1f),
                 anchorMax: new Vector2(0.5f, 1f),
                 position: new Vector2(-100f, -50f),
@@ -88,7 +88,7 @@ namespace MMRPGSkillSystem
 
             GameObject levelTextObject = GUIManager.Instance.CreateText(
                 text: "Level: " + Level.GetLevel(),
-                parent: MMRPGSkillSystem.Menu.transform,
+                parent: ValheimLevelSystem.Menu.transform,
                 anchorMin: new Vector2(0.5f, 1f),
                 anchorMax: new Vector2(0.5f, 1f),
                 position: new Vector2(120f, -50f),
@@ -101,7 +101,7 @@ namespace MMRPGSkillSystem
                 height: 40f,
                 addContentSizeFitter: false);
 
-            MMRPGSkillSystem.menuItems.Add("levelText", levelTextObject);
+            ValheimLevelSystem.menuItems.Add("levelText", levelTextObject);
 
             int interfaceMultiplier = 0;
             List<GameObject> texts = new List<GameObject>();
@@ -113,7 +113,7 @@ namespace MMRPGSkillSystem
 
                 GameObject skillText = GUIManager.Instance.CreateText(
                     text: skill.ToString(),
-                    parent: MMRPGSkillSystem.Menu.transform,
+                    parent: ValheimLevelSystem.Menu.transform,
                     anchorMin: new Vector2(0.5f, 1f),
                     anchorMax: new Vector2(0.5f, 1f),
                     position: new Vector2(-100f, -100f + (-28 * interfaceMultiplier)),
@@ -128,7 +128,7 @@ namespace MMRPGSkillSystem
 
                 GameObject buttonObject2 = GUIManager.Instance.CreateButton(
                           text: " + ",
-                          parent: MMRPGSkillSystem.Menu.transform,
+                          parent: ValheimLevelSystem.Menu.transform,
                           anchorMin: new Vector2(0.5f, 0.5f),
                           anchorMax: new Vector2(0.5f, 0.5f),
                           position: new Vector2(110f, 252f + (-28 * interfaceMultiplier)),
@@ -142,25 +142,25 @@ namespace MMRPGSkillSystem
 
                 GameObject levelText = GUIManager.Instance.CreateText(
                       text: skillLevel.ToString(),
-                      parent: MMRPGSkillSystem.Menu.transform,
+                      parent: ValheimLevelSystem.Menu.transform,
                       anchorMin: new Vector2(0.5f, 1f),
                       anchorMax: new Vector2(0.5f, 1f),
                       position: new Vector2(70f, -100f + (-28 * interfaceMultiplier++)),
                       font: GUIManager.Instance.AveriaSerifBold,
-                      fontSize: 18,
+                      fontSize: 17,
                       color: GUIManager.Instance.ValheimOrange,
                       outline: true,
                       outlineColor: Color.black,
-                      width: 35f,
-                      height: 30f,
+                      width: 40f,
+                      height: 35f,
                       addContentSizeFitter: false);
 
-                MMRPGSkillSystem.menuItems.Add(skill.ToString() + "Text", levelText);
+                ValheimLevelSystem.menuItems.Add(skill.ToString() + "Text", levelText);
             }
 
             GameObject availableEffectsTitle = GUIManager.Instance.CreateText(
                  text: "Available Effects:",
-                 parent: MMRPGSkillSystem.Menu.transform,
+                 parent: ValheimLevelSystem.Menu.transform,
                    new Vector2(0.5f, 0.5f),
                         new Vector2(0.5f, 0.5f),
                         new Vector2(-100f, 100f),
@@ -179,7 +179,7 @@ namespace MMRPGSkillSystem
 
             GameObject expTextObject = GUIManager.Instance.CreateText(
                  text: "Exp: " + Level.GetExp() + "/" + Level.GetMaxExpForCurrentLevel(),
-                 parent: MMRPGSkillSystem.Menu.transform,
+                 parent: ValheimLevelSystem.Menu.transform,
                  anchorMin: new Vector2(0.5f, 1f),
                  anchorMax: new Vector2(0.5f, 1f),
                 position: new Vector2(-100f, -570),
@@ -191,11 +191,11 @@ namespace MMRPGSkillSystem
                  width: 150f,
                  height: 20f,
                  addContentSizeFitter: false);
-            MMRPGSkillSystem.menuItems.Add("ExpText", expTextObject);
+            ValheimLevelSystem.menuItems.Add("ExpText", expTextObject);
 
             GameObject pointsAvailableObject = GUIManager.Instance.CreateText(
                      text: "Available Points: " + Level.GetAvailablePoints(),
-                     parent: MMRPGSkillSystem.Menu.transform,
+                     parent: ValheimLevelSystem.Menu.transform,
                      anchorMin: new Vector2(0.5f, 1f),
                      anchorMax: new Vector2(0.5f, 1f),
                     position: new Vector2(-100f, -600f),
@@ -205,16 +205,16 @@ namespace MMRPGSkillSystem
                      outline: true,
                      outlineColor: Color.black,
                      width: 150f,
-                     height: 30f,
+                     height: 40f,
                      addContentSizeFitter: false);
-            MMRPGSkillSystem.menuItems.Add("PlayerPointsAvailableText", pointsAvailableObject);
+            ValheimLevelSystem.menuItems.Add("PlayerPointsAvailableText", pointsAvailableObject);
 
             GameObject resetButton = GUIManager.Instance.CreateButton(
               text: "Reset",
-              parent: MMRPGSkillSystem.Menu.transform,
+              parent: ValheimLevelSystem.Menu.transform,
               anchorMin: new Vector2(0.5f, 0.5f),
               anchorMax: new Vector2(0.5f, 0.5f),
-              position: new Vector2(140, -240f),
+              position: new Vector2(140, -230f),
               width: 80,
               height: 30f);
             resetButton.SetActive(true);
@@ -224,7 +224,7 @@ namespace MMRPGSkillSystem
 
             GameObject buttonObject = GUIManager.Instance.CreateButton(
                 text: "Close",
-                parent: MMRPGSkillSystem.Menu.transform,
+                parent: ValheimLevelSystem.Menu.transform,
                 anchorMin: new Vector2(0.5f, 0.5f),
                 anchorMax: new Vector2(0.5f, 0.5f),
                 position: new Vector2(0, -300f),
@@ -253,7 +253,7 @@ namespace MMRPGSkillSystem
                  height: 150f,
                  addContentSizeFitter: false);
 
-            MMRPGSkillSystem.menuItems.Add("availableEffectsListText", availableEffectsListText);
+            ValheimLevelSystem.menuItems.Add("availableEffectsListText", availableEffectsListText);
 
             SetAvailableEffectListText();
         }
@@ -262,7 +262,7 @@ namespace MMRPGSkillSystem
         {
 
             GameObject txt;
-            MMRPGSkillSystem.menuItems.TryGetValue("availableEffectsListText", out txt);
+            ValheimLevelSystem.menuItems.TryGetValue("availableEffectsListText", out txt);
 
             if (txt)
             {
@@ -467,7 +467,7 @@ namespace MMRPGSkillSystem
         public static void UpdatePlayerPointsAvailable()
         {
             GameObject txt;
-            MMRPGSkillSystem.menuItems.TryGetValue("PlayerPointsAvailableText", out txt);
+            ValheimLevelSystem.menuItems.TryGetValue("PlayerPointsAvailableText", out txt);
 
             if (txt)
             {
@@ -478,7 +478,7 @@ namespace MMRPGSkillSystem
         public static void UpdateSkillLevelText(string skill, string level)
         {
             GameObject txt;
-            MMRPGSkillSystem.menuItems.TryGetValue(skill + "Text", out txt);
+            ValheimLevelSystem.menuItems.TryGetValue(skill + "Text", out txt);
 
             if (txt)
             {
@@ -490,7 +490,7 @@ namespace MMRPGSkillSystem
         public static void UpdateExpText()
         {
             GameObject txt;
-            MMRPGSkillSystem.menuItems.TryGetValue("ExpText", out txt);
+            ValheimLevelSystem.menuItems.TryGetValue("ExpText", out txt);
 
             if (txt)
             {
@@ -501,7 +501,7 @@ namespace MMRPGSkillSystem
         public static void UpdatePlayerLevelText()
         {
             GameObject txt;
-            MMRPGSkillSystem.menuItems.TryGetValue("levelText", out txt);
+            ValheimLevelSystem.menuItems.TryGetValue("levelText", out txt);
 
             if (txt)
             {
@@ -512,7 +512,7 @@ namespace MMRPGSkillSystem
         public static void AddAvailableEffectText(string text)
         {
             GameObject txt;
-            MMRPGSkillSystem.menuItems.TryGetValue("availableEffectsListText", out txt);
+            ValheimLevelSystem.menuItems.TryGetValue("availableEffectsListText", out txt);
 
             if (txt)
             {
