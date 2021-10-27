@@ -243,7 +243,7 @@ namespace MMRPGSkillSystem
             Tier10Creatures = Config.Bind("Server config", "Tier10Creatures", "",
                 new ConfigDescription("Tier10Creatures", null,
                         new ConfigurationManagerAttributes { IsAdminOnly = true }));
-
+             
             Strength.InitConfigs(Config);
             Focus.InitConfigs(Config);
             Agility.InitConfigs(Config);

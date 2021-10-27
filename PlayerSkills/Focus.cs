@@ -56,7 +56,7 @@ namespace MMRPGSkillSystem.PlayerSkills
                     new ConfigDescription("Level200LifeAndStaminaRegen", null, null,
                     new ConfigurationManagerAttributes { IsAdminOnly = true }));
 
-            Level200ElementalReduction = config.Bind("Focus Server config", "Level200ElementalReduction", 1.5f,
+            Level200ElementalReduction = config.Bind("Focus Server config", "Level200ElementalReduction", 1.15f,
                     new ConfigDescription("Level200ElementalReduction", null, null,
                     new ConfigurationManagerAttributes { IsAdminOnly = true }));
         }
@@ -69,7 +69,7 @@ namespace MMRPGSkillSystem.PlayerSkills
                 if (__instance.m_character.IsPlayer())
                 {
                     skillLevel = Level.GetSkillLevel(Skill.Focus);
-                    var regenValue = (skillLevel / 100f) * PassiveStaminaRegen.Value;
+                    var regenValue = (skillLevel / 100f) * (PassiveStaminaRegen.Value - 1);
 
                     if (skillLevel >= 50) regenValue += Level50StaminaRegen.Value - 1;
                     if (skillLevel >= 200) regenValue += Level200LifeAndStaminaRegen.Value - 1;
@@ -79,27 +79,24 @@ namespace MMRPGSkillSystem.PlayerSkills
             }
         }
 
-        [HarmonyPatch(typeof(Player), nameof(Player.UpdateFood))]
-        public static class AddHealthRegen_Player_UpdateFood_Patch
+        [HarmonyPatch(typeof(SEMan), nameof(SEMan.ModifyHealthRegen))]
+        public static class ModifyHealthRegen_SEMan_ModifyHealthRegen_Patch
         {
-            public static void Postfix(Player __instance)
+            public static void Postfix(SEMan __instance, ref float regenMultiplier)
             {
-                if (__instance.m_foodRegenTimer != 0.0f) return;
+                if (__instance.m_character.IsPlayer())
+                {
+                    skillLevel = Level.GetSkillLevel(Skill.Focus);
 
-                skillLevel = Level.GetSkillLevel(Skill.Focus);
+                    var regenValue = (skillLevel / 100f) * (PassiveLifeRegen.Value - 1);
 
-                var regenAmount = 1f;
-                regenAmount += (skillLevel / 100f) * (PassiveLifeRegen.Value - 1);
+                    if (skillLevel >= 100) regenValue += Level100LifeRegen.Value - 1;
+                    if (skillLevel >= 200) regenValue += Level200LifeAndStaminaRegen.Value - 1;
 
-                if (skillLevel >= 100) regenAmount += Level100LifeRegen.Value - 1;
-                if (skillLevel >= 200) regenAmount += Level200LifeAndStaminaRegen.Value - 1;
-
-                var regenMultiplier = 1.0f;
-                __instance.m_seman.ModifyHealthRegen(ref regenMultiplier);
-                __instance.Heal(regenAmount * regenMultiplier);
+                    regenMultiplier += regenValue;
+                }
             }
         }
-
 
         [HarmonyPatch(typeof(Character), nameof(Character.RPC_Damage))]
         public static class RPC_Damage
@@ -124,25 +121,6 @@ namespace MMRPGSkillSystem.PlayerSkills
                 hit.m_damage.m_lightning *= elementalReduction;
                 hit.m_damage.m_poison *= elementalReduction;
                 hit.m_damage.m_spirit *= elementalReduction;
-            }
-        }
-
-        [HarmonyPatch(typeof(SEMan), nameof(SEMan.ModifyHealthRegen))]
-        public static class ModifyHealthRegen_SEMan_ModifyHealthRegen_Patch
-        {
-            public static void Postfix(SEMan __instance, ref float regenMultiplier)
-            {
-                if (__instance.m_character.IsPlayer())
-                {
-                    skillLevel = Level.GetSkillLevel(Skill.Focus);
-
-                    var regenValue = (skillLevel / 100f) * PassiveLifeRegen.Value;
-
-                    if (skillLevel >= 100) regenValue += Level100LifeRegen.Value - 1;
-                    if (skillLevel >= 200) regenValue += Level200LifeAndStaminaRegen.Value - 1;
-
-                    regenMultiplier *= regenValue;
-                }
             }
         }
 

@@ -192,7 +192,7 @@ namespace MMRPGSkillSystem.PlayerSkills
 
                 if (skillLevel < 1) return;
 
-                var magicDamageMultier = ((skillLevel / 100f) * PassiveMagicDamage.Value);
+                var magicDamageMultier = 1 + (skillLevel / 100f) * (PassiveMagicDamage.Value - 1);
 
                 if (skillLevel > 50) magicDamageMultier += Level50MagicDamage.Value - 1;
 

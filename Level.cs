@@ -39,7 +39,8 @@ namespace MMRPGSkillSystem
 
         public static void RaiseExp(Character creature)
         {
-            MonsterExp monster = ExpTable.MonsterExpList.Where(x => x.Name == creature.gameObject.name).FirstOrDefault();
+            var creatureName = creature.gameObject.name.Replace("(Clone)", "");
+            MonsterExp monster = ExpTable.MonsterExpList.Where(x => x.Name.ToLower() == creatureName.ToLower()  ).FirstOrDefault();
 
             if (monster == null)
             {
@@ -54,9 +55,8 @@ namespace MMRPGSkillSystem
             float rangeToDivideExp = 100f;
             int nearPlayers = Player.GetPlayersInRangeXZ(Player.m_localPlayer.transform.position, rangeToDivideExp);
 
-            Debug.LogError("nearPlayers: " + nearPlayers);
             exp *= ValheimLevelSystem.ExpRate.Value;
-            exp /= nearPlayers;
+            if (nearPlayers > 0) exp /= nearPlayers;
 
             AddExp(exp);
         }
@@ -85,8 +85,6 @@ namespace MMRPGSkillSystem
                     Player.m_localPlayer.m_knownTexts["playerExp"] = newExp.ToString();
                 }
             }
-
-            Debug.LogError(Player.m_localPlayer.m_knownTexts["playerExp"]);
 
             GUI.UpdateExpText();
         }

@@ -22,8 +22,6 @@ namespace MMRPGSkillSystem
             ValheimLevelSystem.Tier8Creatures.Value.Split(',').ToList().ForEach(x => MonsterExpList.Add(new MonsterExp(x, ValheimLevelSystem.Tier8Exp.Value, 8)));        
             ValheimLevelSystem.Tier9Creatures.Value.Split(',').ToList().ForEach(x => MonsterExpList.Add(new MonsterExp(x, ValheimLevelSystem.Tier9Exp.Value, 9)));        
             ValheimLevelSystem.Tier10Creatures.Value.Split(',').ToList().ForEach(x => MonsterExpList.Add(new MonsterExp(x, ValheimLevelSystem.Tier10Exp.Value, 10)));
-
-            MonsterExpList.ForEach(x => Debug.LogError(x.Name + x.ExpAmount));
         }
     }
 
