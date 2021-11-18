@@ -114,7 +114,9 @@ namespace MMRPGSkillSystem.PlayerSkills
 
                 float elementalReduction = Level50ElementalReduction.Value;
 
-                if (skillLevel >= 100) elementalReduction += Level200ElementalReduction.Value - 1;
+                if (skillLevel >= 100) elementalReduction += Level200ElementalReduction.Value;
+
+                elementalReduction = 1 - elementalReduction;
 
                 hit.m_damage.m_fire *= elementalReduction;
                 hit.m_damage.m_frost *= elementalReduction;

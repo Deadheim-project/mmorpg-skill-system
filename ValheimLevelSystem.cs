@@ -17,9 +17,11 @@ namespace MMRPGSkillSystem
     {
         public const string PluginGUID = "Detalhes.ValheimLevelSystem";
         public const string Name = "ValheimLevelSystem";
-        public const string Version = "1.0.0";
+        public const string Version = "1.1.6";
 
         public static bool listInitiliazed = false;
+
+        public static string PlayerName = "";
 
         public static List<string> PotionToReduceCooldownNameList = new List<string>(new string[] { "Flask_of_the_Gods", "Grand_Healing_Tide_Potion", "Grand_Spiritual_Healing_Potion", "Grand_Stamina_Elixir", "Medium_Healing_Tide_Flask", "Medium_Spiritual_Healing_Flask", "Medium_Stamina_Flask", "Lesser_Healing_Tide_Vial", "Lesser_Spiritual_Healing_Vial", "Lesser_Stamina_Vial", "MeadHealthMedium", "MeadHealthMinor", "MeadStaminaMedium", "MeadStaminaMinor" });
         public static List<string> PotionToIncreaseTimeNameList = new List<string>(new string[] { "Flask_of_Elements", "Flask_of_Fortification", "Flask_of_Second_Wind", "Grand_Stealth_Elixir", "MeadPoisonResist", "MeadTasty", "MeadFrostResist", "BarleyWine", "Flask_of_Magelight" });
@@ -34,6 +36,7 @@ namespace MMRPGSkillSystem
 
         public static ConfigEntry<int> ExpRate;
         public static ConfigEntry<bool> RequiresTokenToResetSkill;
+        public static ConfigEntry<bool> ShowLevelOnName;
         public static ConfigEntry<int> StartingPoints;
         public static ConfigEntry<int> MaxLevel;
         public static ConfigEntry<int> PointsPerLevel;
@@ -52,7 +55,7 @@ namespace MMRPGSkillSystem
         public static ConfigEntry<int> Tier8Exp;
         public static ConfigEntry<int> Tier9Exp;
         public static ConfigEntry<int> Tier10Exp;
-        public static ConfigEntry<int> TierBossExp;
+        public static ConfigEntry<int> BossExpMultiplier;
 
         public static ConfigEntry<string> Tier1Creatures;
         public static ConfigEntry<string> Tier2Creatures;
@@ -112,11 +115,20 @@ namespace MMRPGSkillSystem
             RequiresTokenToResetSkill = Config.Bind("Server config", "RequiresTokenToResetSkill", false,
                 new ConfigDescription("RequiresTokenToResetSkill", null,
                          new ConfigurationManagerAttributes { IsAdminOnly = true }));
+            ShowLevelOnName = Config.Bind("Server config", "ShowLevelOnName", true,
+    new ConfigDescription("ShowLevelOnName", null,
+             new ConfigurationManagerAttributes { IsAdminOnly = true }));
 
             ExpRate = Config.Bind("Server config", "ExpRate", 1,
                 new ConfigDescription("ExpRate",
                     new AcceptableValueRange<int>(1, 100), null,
                          new ConfigurationManagerAttributes { IsAdminOnly = true }));
+
+            BossExpMultiplier = Config.Bind("Server config", "BossExpMultiplier", 10,
+       new ConfigDescription("BossExpMultiplier",
+           new AcceptableValueRange<int>(1, 100), null,
+                new ConfigurationManagerAttributes { IsAdminOnly = true }));
+
 
             StartingPoints = Config.Bind("Server config", "StartingPoints", 15,
                new ConfigDescription("StartingPoints",
@@ -132,7 +144,7 @@ namespace MMRPGSkillSystem
                    new ConfigDescription("LevelToStartGivingExtraPoint",
                    new AcceptableValueRange<int>(1, int.MaxValue), null,
                    new ConfigurationManagerAttributes { IsAdminOnly = true }));
-            
+
             MaxLevel = Config.Bind("Server config", "MaxLevel", 100,
                 new ConfigDescription("MaxLevel",
                     new AcceptableValueRange<int>(1, 1000), null,
@@ -168,7 +180,7 @@ namespace MMRPGSkillSystem
                     new AcceptableValueRange<int>(1, int.MaxValue), null,
                          new ConfigurationManagerAttributes { IsAdminOnly = true }));
 
-            Tier2Creatures = Config.Bind("Server config", "Tier2Creatures", "gd_king,Greydwarf,Greydwarf_Elite,Greydwarf_Shaman,Skeleton,Skeleton_Poison,TentaRoot,Skeleton_NoArcher",
+            Tier2Creatures = Config.Bind("Server config", "Tier2Creatures", "gd_king,Greydwarf,Greydwarf_Elite,Greydwarf_Shaman,Skeleton,Skeleton_Poison,Skeleton_NoArcher",
                 new ConfigDescription("Tier2Creatures", null,
                         new ConfigurationManagerAttributes { IsAdminOnly = true }));
 
@@ -243,7 +255,7 @@ namespace MMRPGSkillSystem
             Tier10Creatures = Config.Bind("Server config", "Tier10Creatures", "",
                 new ConfigDescription("Tier10Creatures", null,
                         new ConfigurationManagerAttributes { IsAdminOnly = true }));
-             
+
             Strength.InitConfigs(Config);
             Focus.InitConfigs(Config);
             Agility.InitConfigs(Config);

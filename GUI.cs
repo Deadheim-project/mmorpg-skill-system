@@ -102,6 +102,7 @@ namespace MMRPGSkillSystem
                 addContentSizeFitter: false);
 
             ValheimLevelSystem.menuItems.Add("levelText", levelTextObject);
+            ValheimLevelSystem.menuItems.Add("nameText", textObject);
 
             int interfaceMultiplier = 0;
             List<GameObject> texts = new List<GameObject>();
@@ -338,7 +339,7 @@ namespace MMRPGSkillSystem
 
             if (skillLevel >= 150)
             {
-                txt.GetComponent<Text>().text += "\n Foc 150: +" + Focus.Level150BuffAndPotionsDuration.Value + " Boss buff and potions duration";
+                txt.GetComponent<Text>().text += "\n Foc 150: +" +(Focus.Level150BuffAndPotionsDuration.Value - 1) *100 + " Boss buff and potions duration";
                 txt.GetComponent<Text>().text += "\n Foc 150: +" + (Focus.Level150LifeBonus.Value) + " Life bonus";
             }
 
@@ -454,7 +455,7 @@ namespace MMRPGSkillSystem
             {
                 txt.GetComponent<Text>().text += "\n Str 150: +" + (Strength.Level150SpeedMultiplierOneHanded.Value - 1) * 100 + " One-handed speed";
                 txt.GetComponent<Text>().text += "\n Str 150:  +" + (Strength.Level150SwordsDamage.Value - 1) * 100 + "% Sword damage";
-                txt.GetComponent<Text>().text += "\n Str 150:  +" + Strength.Level150CarryWeight.Value + "carry weight";
+                txt.GetComponent<Text>().text += "\n Str 150:  +" + Strength.Level150CarryWeight.Value + " carry weight";
             }
 
             if (skillLevel >= 200)
@@ -479,6 +480,7 @@ namespace MMRPGSkillSystem
         {
             GameObject txt;
             ValheimLevelSystem.menuItems.TryGetValue(skill + "Text", out txt);
+ 
 
             if (txt)
             {
@@ -507,6 +509,11 @@ namespace MMRPGSkillSystem
             {
                 txt.GetComponent<Text>().text = "Level: " + Level.GetLevel();
             }
+
+            GameObject txt2;
+            ValheimLevelSystem.menuItems.TryGetValue("nameText", out txt2);
+            txt2.GetComponent<Text>().text = ValheimLevelSystem.PlayerName + " " + Level.GetLevel();
+
         }
 
         public static void AddAvailableEffectText(string text)

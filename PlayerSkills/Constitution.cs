@@ -67,13 +67,13 @@ namespace MMRPGSkillSystem.PlayerSkills
         {
             public static void Postfix(ItemDrop.ItemData __instance, ref float __result)
             {
-                skillLevel = Level.GetSkillLevel(Skill.Focus);
+                skillLevel = Level.GetSkillLevel(Skill.Constitution);
 
                 if (skillLevel < 150) return;
 
                 var armorMultiplier = Level150BonusArmor.Value;
 
-                if (skillLevel < 150) armorMultiplier += Level200BonusArmor.Value;
+                if (skillLevel >= 200) armorMultiplier += Level200BonusArmor.Value;
 
                 __result *= armorMultiplier;
             }
@@ -89,14 +89,16 @@ namespace MMRPGSkillSystem.PlayerSkills
                     return;
                 }
 
-                skillLevel = Level.GetSkillLevel(Skill.Focus);
+                skillLevel = Level.GetSkillLevel(Skill.Constitution);
 
                 if (skillLevel < 50) return;
 
-                float physicalDamageReduction = Level50PhysicalDamageReduction.Value;
+                float physicalDamageReduction = Level50PhysicalDamageReduction.Value - 1;
 
                 if (skillLevel >= 100) physicalDamageReduction += Level100PhysicalDamageReduction.Value - 1;
                 if (skillLevel >= 200) physicalDamageReduction += Level200PhysicalDamageReduction.Value - 1;
+
+                physicalDamageReduction = 1 - physicalDamageReduction;
 
                 hit.m_damage.m_blunt *= physicalDamageReduction;
                 hit.m_damage.m_slash *= physicalDamageReduction;
@@ -150,19 +152,37 @@ namespace MMRPGSkillSystem.PlayerSkills
         [HarmonyPatch(typeof(Player), nameof(Player.ConsumeItem))]
         public static class ConsumeItem
         {
+            public static float oldFoodValue;
             private static void Prefix(Inventory inventory, ItemDrop.ItemData item)
             {
                 Player localPlayer = Player.m_localPlayer;
                 if (!localPlayer || localPlayer.IsDead() || (localPlayer.InCutscene() || localPlayer.IsTeleporting()))
                     return;
 
-                skillLevel = Level.GetSkillLevel(Skill.Intelligence);
+                skillLevel = Level.GetSkillLevel(Skill.Constitution);
 
                 if (skillLevel < 50) return;
 
                 if (item.m_shared.m_itemType == ItemDrop.ItemData.ItemType.Consumable && !ValheimLevelSystem.PotionToReduceCooldownNameList.Contains(item.m_dropPrefab.name))
                 {
-                    item.m_shared.m_consumeStatusEffect.m_ttl *= Level50FoodDuration.Value;
+                    oldFoodValue = item.m_shared.m_foodBurnTime;
+                    item.m_shared.m_foodBurnTime *= Level50FoodDuration.Value;
+                };
+            }
+
+            private static void Postfix(Inventory inventory, ItemDrop.ItemData item)
+            {
+                Player localPlayer = Player.m_localPlayer;
+                if (!localPlayer || localPlayer.IsDead() || (localPlayer.InCutscene() || localPlayer.IsTeleporting()))
+                    return;
+
+                skillLevel = Level.GetSkillLevel(Skill.Constitution);
+
+                if (skillLevel < 50) return;
+
+                if (item.m_shared.m_itemType == ItemDrop.ItemData.ItemType.Consumable && !ValheimLevelSystem.PotionToReduceCooldownNameList.Contains(item.m_dropPrefab.name))
+                {
+                    item.m_shared.m_foodBurnTime = oldFoodValue;
                 };
             }
         }

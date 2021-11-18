@@ -167,19 +167,25 @@ namespace MMRPGSkillSystem.PlayerSkills
         {
             public static void Postfix(SEMan __instance, ref float limit)
             {
-                if (__instance.m_character.IsPlayer())
+                try
                 {
-                    int skillLevel = Level.GetSkillLevel(Skill.Strength);
-
-                    if (skillLevel >= 50)
+                    if (__instance.m_character.IsPlayer())
                     {
-                        limit += Level50CarryWeight.Value;
-                    }
+                        int skillLevel = Level.GetSkillLevel(Skill.Strength);
 
-                    if (skillLevel >= 150)
-                    {
-                        limit += Level150CarryWeight.Value;
+                        if (skillLevel >= 50)
+                        {
+                            limit += Level50CarryWeight.Value;
+                        }
+
+                        if (skillLevel >= 150)
+                        {
+                            limit += Level150CarryWeight.Value;
+                        }
                     }
+                } catch
+                {
+
                 }
             }
         }

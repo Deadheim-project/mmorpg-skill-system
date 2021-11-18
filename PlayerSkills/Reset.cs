@@ -25,7 +25,14 @@ namespace MMRPGSkillSystem
             }
 
             int level = Convert.ToInt32(Level.GetLevel()) -1;
-            Player.m_localPlayer.m_knownTexts["playerAvailablePoints"] = (level * ValheimLevelSystem.PointsPerLevel.Value + ValheimLevelSystem.StartingPoints.Value).ToString();
+            int extraPoints = 0;
+
+            if (level > Convert.ToInt32(ValheimLevelSystem.LevelToStartGivingExtraPoint.Value))
+            {
+                extraPoints = level - Convert.ToInt32(ValheimLevelSystem.LevelToStartGivingExtraPoint.Value);
+            }
+
+            Player.m_localPlayer.m_knownTexts["playerAvailablePoints"] = (level * ValheimLevelSystem.PointsPerLevel.Value + ValheimLevelSystem.StartingPoints.Value + extraPoints).ToString();
 
             if (ValheimLevelSystem.RequiresTokenToResetSkill.Value) inventory.RemoveOneItem(resetToken);
 

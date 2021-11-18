@@ -37,10 +37,12 @@ namespace MMRPGSkillSystem
             }
         }
 
+        public static float rangeToDivideExp = 300f;
+
         public static void RaiseExp(Character creature)
         {
             var creatureName = creature.gameObject.name.Replace("(Clone)", "");
-            MonsterExp monster = ExpTable.MonsterExpList.Where(x => x.Name.ToLower() == creatureName.ToLower()  ).FirstOrDefault();
+            MonsterExp monster = ExpTable.MonsterExpList.Where(x => x.Name.ToLower() == creatureName.ToLower() ).FirstOrDefault();
 
             if (monster == null)
             {
@@ -48,17 +50,31 @@ namespace MMRPGSkillSystem
                 return;
             }
 
-            var exp = monster.ExpAmount * (creature.m_level / 100 + 1); //10% exp bonus per star
+            float exp = monster.ExpAmount + ((monster.ExpAmount / 100f) * (creature.GetLevel() * 10f));
 
-            if (creature.m_faction == Character.Faction.Boss) exp *= 10; //10x bonus boss
+            if (creature.m_faction == Character.Faction.Boss) exp *= ValheimLevelSystem.BossExpMultiplier.Value; 
 
-            float rangeToDivideExp = 100f;
             int nearPlayers = Player.GetPlayersInRangeXZ(Player.m_localPlayer.transform.position, rangeToDivideExp);
 
             exp *= ValheimLevelSystem.ExpRate.Value;
             if (nearPlayers > 0) exp /= nearPlayers;
 
-            AddExp(exp);
+            AddExp(Convert.ToInt32(exp));
+        }
+
+
+        public static void RaiseExpWithValues(int expAmount, int level, bool boss = false)
+        {         
+            float exp = expAmount + ((expAmount / 100f) * (level * 10f));
+
+            if (boss) exp *= ValheimLevelSystem.BossExpMultiplier.Value;
+
+            int nearPlayers = Player.GetPlayersInRangeXZ(Player.m_localPlayer.transform.position, rangeToDivideExp);
+
+            exp *= ValheimLevelSystem.ExpRate.Value;
+            if (nearPlayers > 0) exp /= nearPlayers;
+
+            AddExp(Convert.ToInt32(exp));
         }
 
         unsafe public static void AddExp(int exp)
@@ -74,7 +90,9 @@ namespace MMRPGSkillSystem
                 long currentExp = long.Parse(Player.m_localPlayer.m_knownTexts["playerExp"]);
                 int currentLevel = Convert.ToInt32(Player.m_localPlayer.m_knownTexts["playerLevel"]);
                 long newExp = exp + currentExp;
-                LevelRequirement currentLevelRequirement = LevelRequirementList.First(x => x.Level == currentLevel);
+                LevelRequirement currentLevelRequirement = LevelRequirementList.FirstOrDefault(x => x.Level == currentLevel);
+
+                if (currentLevelRequirement is null) return;
 
                 if (newExp >= currentLevelRequirement.ExpAmount)
                 {
@@ -93,11 +111,16 @@ namespace MMRPGSkillSystem
         {
             Player.m_localPlayer.m_knownTexts["playerExp"] = "0";
             Player.m_localPlayer.m_knownTexts["playerLevel"] = (currentLevel + 1).ToString();
+            AddPoints();
 
             Player.m_localPlayer.Message(MessageHud.MessageType.Center, "Level: " + (currentLevel + 1));
 
+            if (ValheimLevelSystem.ShowLevelOnName.Value)
+            {
+                Player.m_localPlayer.m_nview.GetZDO().Set("playerName", ValheimLevelSystem.PlayerName + " " + Level.GetLevel());
+            }
+
             GUI.UpdatePlayerLevelText();
-            AddPoints();
         }
 
         public static long GetMaxExpForCurrentLevel()
@@ -106,7 +129,10 @@ namespace MMRPGSkillSystem
             if (!localPlayer || localPlayer.IsDead() || (localPlayer.InCutscene() || localPlayer.IsTeleporting()))
                 return 0;
 
-            LevelRequirement currentLevelRequirement = LevelRequirementList.First(x => x.Level == long.Parse(Player.m_localPlayer.m_knownTexts["playerLevel"]));
+            LevelRequirement currentLevelRequirement = LevelRequirementList.FirstOrDefault(x => x.Level == long.Parse(Player.m_localPlayer.m_knownTexts["playerLevel"]));
+
+            if (currentLevelRequirement == null) return 0;
+
             return currentLevelRequirement.ExpAmount;
         }
 

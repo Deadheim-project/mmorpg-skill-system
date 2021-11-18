@@ -45,7 +45,7 @@ namespace MMRPGSkillSystem.PlayerSkills
                     new ConfigDescription("Level100QuickLearner", null, null,
                     new ConfigurationManagerAttributes { IsAdminOnly = true }));
 
-            Level100BuffAndPotionsCooldown = config.Bind("Intelligence Server config", "Level100LifeRegen", 1.1f,
+            Level100BuffAndPotionsCooldown = config.Bind("Intelligence Server config", "Level100LifeRegen", 1.2f,
                     new ConfigDescription("Level50CarLevel100LifeRegenryWeight", null, null,
                     new ConfigurationManagerAttributes { IsAdminOnly = true }));
 
@@ -214,11 +214,9 @@ namespace MMRPGSkillSystem.PlayerSkills
             {
                 if (Player.m_localPlayer == null) return;
 
-                skillLevel = Level.GetSkillLevel(Skill.Intelligence);
-
                 if (skillLevel < 150) return;
 
-                __result += Level150AllSkillBonus.Value;
+                __result *= Level150AllSkillBonus.Value / 100 + 1;
             }
         }
 

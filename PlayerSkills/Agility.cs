@@ -197,30 +197,30 @@ namespace MMRPGSkillSystem.PlayerSkills
         [HarmonyPatch(typeof(Attack), nameof(Attack.DoAreaAttack))]
         public static class DoAreaAttack
         {
-            private static bool Prefix(Attack __instance) { return ModifyBackstabPatchHelper.DoPrefix(__instance); }
-            private static void Postfix(Attack __instance) { ModifyBackstabPatchHelper.DoPostfix(__instance); }
+            private static bool Prefix(Attack __instance) { return ModifyBackstab.Prefix(__instance); }
+            private static void Postfix(Attack __instance) { ModifyBackstab.Postfix(__instance); }
         }
 
         [HarmonyPatch(typeof(Attack), nameof(Attack.DoMeleeAttack))]
         public static class DoMeleeAttack
         {
-            private static bool Prefix(Attack __instance) { return ModifyBackstabPatchHelper.DoPrefix(__instance); }
-            private static void Postfix(Attack __instance) { ModifyBackstabPatchHelper.DoPostfix(__instance); }
+            private static bool Prefix(Attack __instance) { return ModifyBackstab.Prefix(__instance); }
+            private static void Postfix(Attack __instance) { ModifyBackstab.Postfix(__instance); }
         }
 
         [HarmonyPatch(typeof(Attack), nameof(Attack.FireProjectileBurst))]
         public static class FireProjectileBurst
         {
-            private static bool Prefix(Attack __instance) { return ModifyBackstabPatchHelper.DoPrefix(__instance); }
-            private static void Postfix(Attack __instance) { ModifyBackstabPatchHelper.DoPostfix(__instance); }
+            private static bool Prefix(Attack __instance) { return ModifyBackstab.Prefix(__instance); }
+            private static void Postfix(Attack __instance) { ModifyBackstab.Postfix(__instance); }
         }
 
-        public static class ModifyBackstabPatchHelper
+        public static class ModifyBackstab
         {
             public static bool Override;
             public static float OriginalValue;
 
-            public static bool DoPrefix(Attack __instance)
+            public static bool Prefix(Attack __instance)
             {
                 int skillLevel = Level.GetSkillLevel(Skill.Agility);
 
@@ -232,7 +232,7 @@ namespace MMRPGSkillSystem.PlayerSkills
                 Override = false;
                 OriginalValue = -1;
 
-                var weapon = __instance.m_weapon;
+                var weapon = __instance.m_weapon; 
                 if (weapon == null)
                 {
                     return true;
@@ -249,7 +249,7 @@ namespace MMRPGSkillSystem.PlayerSkills
                 return true;
             }
 
-            public static void DoPostfix(Attack __instance)
+            public static void Postfix(Attack __instance)
             {
                 int skillLevel = Level.GetSkillLevel(Skill.Agility);
 
