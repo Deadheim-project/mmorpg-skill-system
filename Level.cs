@@ -60,6 +60,7 @@ namespace MMRPGSkillSystem
             if (nearPlayers > 0) exp /= nearPlayers;
 
             AddExp(Convert.ToInt32(exp));
+
         }
 
 
@@ -75,6 +76,7 @@ namespace MMRPGSkillSystem
             if (nearPlayers > 0) exp /= nearPlayers;
 
             AddExp(Convert.ToInt32(exp));
+            if (ValheimLevelSystem.ShowExpText.Value) Player.m_localPlayer.Message(MessageHud.MessageType.TopLeft, "+" + exp + " Exp");
         }
 
         unsafe public static void AddExp(int exp)

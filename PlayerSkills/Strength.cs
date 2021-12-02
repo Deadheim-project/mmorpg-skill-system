@@ -196,14 +196,20 @@ namespace MMRPGSkillSystem.PlayerSkills
         static class CharacterAnimEvent_Speed_Patch
         {
             static void Postfix(ref Animator ___m_animator, Character ___m_character, float speedScale)
-            {
-                if (Player.m_localPlayer == null) return;
+            {try
+                {
+                    if (Player.m_localPlayer == null) return;
 
-                int skillLevel = Level.GetSkillLevel(Skill.Strength);
-                if (skillLevel < 150) return;
+                    int skillLevel = Level.GetSkillLevel(Skill.Strength);
+                    if (skillLevel < 150) return;
 
-                if (___m_character is Player)
-                    lastAnimations.Remove((___m_character as Player).GetPlayerID());
+                    if (___m_character is Player)
+                        lastAnimations.Remove((___m_character as Player).GetPlayerID());
+                } catch
+                {
+
+                }
+
             }
         }
 
@@ -212,30 +218,36 @@ namespace MMRPGSkillSystem.PlayerSkills
         {
             static void Prefix(ref Animator ___m_animator, Character ___m_character)
             {
-                if (Player.m_localPlayer == null) return;
-
-                int skillLevel = Level.GetSkillLevel(Skill.Strength);
-                if (skillLevel < 150) return;
-
-                if (!(___m_character is Humanoid) || Player.m_localPlayer == null || (___m_character is Player && (___m_character as Player).GetPlayerID() != Player.m_localPlayer.GetPlayerID()))
-                    return;
-
-                if (___m_animator?.GetCurrentAnimatorClipInfo(0)?.Any() != true || ___m_animator.GetCurrentAnimatorClipInfo(0)[0].clip == null)
+                try
                 {
-                    return;
-                }
+                    if (Player.m_localPlayer == null) return;
 
-                if (___m_animator.GetCurrentAnimatorClipInfo(0)[0].clip.name.StartsWith("Attack"))
+                    int skillLevel = Level.GetSkillLevel(Skill.Strength);
+                    if (skillLevel < 150) return;
+
+                    if (!(___m_character is Humanoid) || Player.m_localPlayer == null || (___m_character is Player && (___m_character as Player).GetPlayerID() != Player.m_localPlayer.GetPlayerID()))
+                        return;
+
+                    if (___m_animator?.GetCurrentAnimatorClipInfo(0)?.Any() != true || ___m_animator.GetCurrentAnimatorClipInfo(0)[0].clip == null)
+                    {
+                        return;
+                    }
+
+                    if (___m_animator.GetCurrentAnimatorClipInfo(0)[0].clip.name.StartsWith("Attack"))
+                    {
+                        var itemType = (___m_character as Humanoid).GetCurrentWeapon()?.m_shared.m_itemType;
+                        if (itemType == ItemDrop.ItemData.ItemType.OneHandedWeapon)
+                            ___m_animator.speed = ChangeSpeed(___m_character, ___m_animator, Level150SpeedMultiplierOneHanded.Value);
+
+                        if (skillLevel < 200) return;
+                        if (itemType == ItemDrop.ItemData.ItemType.TwoHandedWeapon)
+                            ___m_animator.speed = ChangeSpeed(___m_character, ___m_animator, Level200SpeedMultiplierTwoHanded.Value);
+
+                    }
+                } catch
                 {
-                    var itemType = (___m_character as Humanoid).GetCurrentWeapon()?.m_shared.m_itemType;
-                    if (itemType == ItemDrop.ItemData.ItemType.OneHandedWeapon)
-                        ___m_animator.speed = ChangeSpeed(___m_character, ___m_animator, Level150SpeedMultiplierOneHanded.Value);
 
-                    if (skillLevel < 200) return;
-                    if (itemType == ItemDrop.ItemData.ItemType.TwoHandedWeapon)
-                        ___m_animator.speed = ChangeSpeed(___m_character, ___m_animator, Level200SpeedMultiplierTwoHanded.Value);
-
-                }
+                }  
             }
         }
 

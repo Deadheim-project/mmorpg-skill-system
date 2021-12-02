@@ -19,7 +19,7 @@ namespace ValheimLevelSystem
 
         public static void RPC_RaiseExp(long sender, ZPackage pkg)
         {
-            if (ZNet.instance.IsServer()) return;
+            if (!Player.m_localPlayer) return;
 
             string[] splited = pkg.ReadString().Split(',');
             int x = Convert.ToInt32(splited[0]);
@@ -34,6 +34,11 @@ namespace ValheimLevelSystem
 
             name = name.Replace("(Clone)", "");
             MonsterExp monster = ExpTable.MonsterExpList.Where(xx => xx.Name.ToLower() == name.ToLower()).FirstOrDefault();
+            if (monster == null)
+            {
+                Debug.LogError("No MonsterExp for creature: " + name);
+                return;
+            }
             Character character = PrefabManager.Instance.GetPrefab(name).GetComponent<Character>();
  
             Level.RaiseExpWithValues(monster.ExpAmount, level, character.m_faction == Character.Faction.Boss);

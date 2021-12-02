@@ -73,7 +73,7 @@ namespace MMRPGSkillSystem.PlayerSkills
 
                 var armorMultiplier = Level150BonusArmor.Value;
 
-                if (skillLevel >= 200) armorMultiplier += Level200BonusArmor.Value;
+                if (skillLevel >= 200) armorMultiplier += Level200BonusArmor.Value - 1;
 
                 __result *= armorMultiplier;
             }

@@ -17,7 +17,7 @@ namespace MMRPGSkillSystem
     {
         public const string PluginGUID = "Detalhes.ValheimLevelSystem";
         public const string Name = "ValheimLevelSystem";
-        public const string Version = "1.1.6";
+        public const string Version = "1.1.9";
 
         public static bool listInitiliazed = false;
 
@@ -35,6 +35,7 @@ namespace MMRPGSkillSystem
         public static Dictionary<string, GameObject> menuItems = new Dictionary<string, GameObject>();
 
         public static ConfigEntry<int> ExpRate;
+        public static ConfigEntry<bool> ShowExpText;
         public static ConfigEntry<bool> RequiresTokenToResetSkill;
         public static ConfigEntry<bool> ShowLevelOnName;
         public static ConfigEntry<int> StartingPoints;
@@ -115,6 +116,11 @@ namespace MMRPGSkillSystem
             RequiresTokenToResetSkill = Config.Bind("Server config", "RequiresTokenToResetSkill", false,
                 new ConfigDescription("RequiresTokenToResetSkill", null,
                          new ConfigurationManagerAttributes { IsAdminOnly = true }));
+
+            ShowExpText = Config.Bind("Server config", "ShowExpText", true,
+    new ConfigDescription("ShowExpText", null,
+             new ConfigurationManagerAttributes { IsAdminOnly = true }));
+
             ShowLevelOnName = Config.Bind("Server config", "ShowLevelOnName", true,
     new ConfigDescription("ShowLevelOnName", null,
              new ConfigurationManagerAttributes { IsAdminOnly = true }));
