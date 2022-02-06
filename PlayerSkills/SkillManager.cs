@@ -17,6 +17,7 @@ namespace ValheimLevelSystem.PlayerSkills
             Level.RemovePoints();
 
             if (skill.Equals(Skill.Agility)) Agility.UpdateStatusEffect();
+            if (skill.Equals(Skill.Intelligence)) Intelligence.MagicDamageMultiplier = 0;
         }
     }
 

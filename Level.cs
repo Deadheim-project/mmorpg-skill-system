@@ -54,7 +54,6 @@ namespace ValheimLevelSystem
 
         unsafe public static void AddExp(int exp)
         {
-
             if (!Player.m_localPlayer.m_knownTexts.ContainsKey("playerLevel"))
             {
                 Player.m_localPlayer.m_knownTexts.Add("playerLevel", "1");
