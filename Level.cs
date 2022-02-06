@@ -1,10 +1,10 @@
-﻿using MMRPGSkillSystem.PlayerSkills;
+﻿using ValheimLevelSystem.PlayerSkills;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-namespace MMRPGSkillSystem
+namespace ValheimLevelSystem
 {
     public class Level
     {
@@ -37,40 +37,13 @@ namespace MMRPGSkillSystem
             }
         }
 
-        public static float rangeToDivideExp = 300f;
-
-        public static void RaiseExp(Character creature)
-        {
-            var creatureName = creature.gameObject.name.Replace("(Clone)", "");
-            MonsterExp monster = ExpTable.MonsterExpList.Where(x => x.Name.ToLower() == creatureName.ToLower() ).FirstOrDefault();
-
-            if (monster == null)
-            {
-                Debug.LogError("No MonsterExp for creature: " + creature.gameObject.name);
-                return;
-            }
-
-            float exp = monster.ExpAmount + ((monster.ExpAmount / 100f) * (creature.GetLevel() * 10f));
-
-            if (creature.m_faction == Character.Faction.Boss) exp *= ValheimLevelSystem.BossExpMultiplier.Value; 
-
-            int nearPlayers = Player.GetPlayersInRangeXZ(Player.m_localPlayer.transform.position, rangeToDivideExp);
-
-            exp *= ValheimLevelSystem.ExpRate.Value;
-            if (nearPlayers > 0) exp /= nearPlayers;
-
-            AddExp(Convert.ToInt32(exp));
-
-        }
-
-
         public static void RaiseExpWithValues(int expAmount, int level, bool boss = false)
         {         
             float exp = expAmount + ((expAmount / 100f) * (level * 10f));
 
             if (boss) exp *= ValheimLevelSystem.BossExpMultiplier.Value;
 
-            int nearPlayers = Player.GetPlayersInRangeXZ(Player.m_localPlayer.transform.position, rangeToDivideExp);
+            int nearPlayers = Player.GetPlayersInRangeXZ(Player.m_localPlayer.transform.position, ValheimLevelSystem.RangeToDivideExp.Value);
 
             exp *= ValheimLevelSystem.ExpRate.Value;
             if (nearPlayers > 0) exp /= nearPlayers;

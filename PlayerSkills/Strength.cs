@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-namespace MMRPGSkillSystem.PlayerSkills
+namespace ValheimLevelSystem.PlayerSkills
 {
     [HarmonyPatch]
     public class Strength
@@ -73,7 +73,6 @@ namespace MMRPGSkillSystem.PlayerSkills
                     new ConfigDescription("Level200OneTwoHandedDamage", null, null,
                     new ConfigurationManagerAttributes { IsAdminOnly = true }));
         }
-
         [HarmonyPatch(typeof(ItemDrop.ItemData), nameof(ItemDrop.ItemData.GetDamage), typeof(int))]
         public class GetDamage
         {
@@ -183,7 +182,8 @@ namespace MMRPGSkillSystem.PlayerSkills
                             limit += Level150CarryWeight.Value;
                         }
                     }
-                } catch
+                }
+                catch
                 {
 
                 }
@@ -196,7 +196,8 @@ namespace MMRPGSkillSystem.PlayerSkills
         static class CharacterAnimEvent_Speed_Patch
         {
             static void Postfix(ref Animator ___m_animator, Character ___m_character, float speedScale)
-            {try
+            {
+                try
                 {
                     if (Player.m_localPlayer == null) return;
 
@@ -205,7 +206,8 @@ namespace MMRPGSkillSystem.PlayerSkills
 
                     if (___m_character is Player)
                         lastAnimations.Remove((___m_character as Player).GetPlayerID());
-                } catch
+                }
+                catch
                 {
 
                 }
@@ -244,10 +246,11 @@ namespace MMRPGSkillSystem.PlayerSkills
                             ___m_animator.speed = ChangeSpeed(___m_character, ___m_animator, Level200SpeedMultiplierTwoHanded.Value);
 
                     }
-                } catch
+                }
+                catch
                 {
 
-                }  
+                }
             }
         }
 

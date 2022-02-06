@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace MMRPGSkillSystem
+namespace ValheimLevelSystem
 {
     public class GUIConfirm
     {

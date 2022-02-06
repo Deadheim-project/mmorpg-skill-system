@@ -1,8 +1,8 @@
-﻿using MMRPGSkillSystem.PlayerSkills;
+﻿using ValheimLevelSystem.PlayerSkills;
 using System;
 using System.Linq;
 
-namespace MMRPGSkillSystem
+namespace ValheimLevelSystem
 {
     public class Reset
     {
@@ -38,6 +38,7 @@ namespace MMRPGSkillSystem
 
             GUI.UpdatePlayerPointsAvailable();
             GUIConfirm.DestroyMenu();
+            Agility.UpdateStatusEffect();
         }
     }
 }

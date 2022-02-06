@@ -1,5 +1,4 @@
 ﻿using HarmonyLib;
-using MMRPGSkillSystem;
 using System;
 using UnityEngine;
 using System.Linq;
@@ -27,7 +26,7 @@ namespace ValheimLevelSystem
             string name = (splited[2]);
             int level = Convert.ToInt32(splited[3]);
 
-            if ((double)Vector2.Distance(new Vector2(x, y), Player.m_localPlayer.transform.position) >= (double)Level.rangeToDivideExp)
+            if ((double)Vector2.Distance(new Vector2(x, y), Player.m_localPlayer.transform.position) >= (double)ValheimLevelSystem.RangeToDivideExp.Value)
             {
                 return;
             }

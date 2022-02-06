@@ -2,7 +2,7 @@
 using Jotunn.Managers;
 using System;
 
-namespace MMRPGSkillSystem
+namespace ValheimLevelSystem
 {
     public class ResetToken
     {

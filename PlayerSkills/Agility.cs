@@ -1,7 +1,7 @@
 ﻿using BepInEx.Configuration;
 using HarmonyLib;
 
-namespace MMRPGSkillSystem.PlayerSkills
+namespace ValheimLevelSystem.PlayerSkills
 {
     [HarmonyPatch]
     public class Agility
@@ -197,73 +197,91 @@ namespace MMRPGSkillSystem.PlayerSkills
         [HarmonyPatch(typeof(Attack), nameof(Attack.DoAreaAttack))]
         public static class DoAreaAttack
         {
-            private static bool Prefix(Attack __instance) { return ModifyBackstab.Prefix(__instance); }
+            [HarmonyPriority(Priority.First)]
+            private static void Prefix(Attack __instance) { ModifyBackstab.Prefix(__instance); }
+            [HarmonyPriority(Priority.Last)]
             private static void Postfix(Attack __instance) { ModifyBackstab.Postfix(__instance); }
         }
 
         [HarmonyPatch(typeof(Attack), nameof(Attack.DoMeleeAttack))]
         public static class DoMeleeAttack
         {
-            private static bool Prefix(Attack __instance) { return ModifyBackstab.Prefix(__instance); }
+            [HarmonyPriority(Priority.First)]
+            private static void Prefix(Attack __instance) { ModifyBackstab.Prefix(__instance); }
+            [HarmonyPriority(Priority.Last)]
             private static void Postfix(Attack __instance) { ModifyBackstab.Postfix(__instance); }
         }
 
         [HarmonyPatch(typeof(Attack), nameof(Attack.FireProjectileBurst))]
         public static class FireProjectileBurst
         {
-            private static bool Prefix(Attack __instance) { return ModifyBackstab.Prefix(__instance); }
+            [HarmonyPriority(Priority.First)]
+            private static void Prefix(Attack __instance) { ModifyBackstab.Prefix(__instance); }
+            [HarmonyPriority(Priority.Last)]
             private static void Postfix(Attack __instance) { ModifyBackstab.Postfix(__instance); }
         }
 
         public static class ModifyBackstab
         {
-            public static bool Override;
-            public static float OriginalValue;
+            static ItemDrop.ItemData itemWeapon = null;
+            static float OriginalValue;
+            static int skillLevel = 0;
 
-            public static bool Prefix(Attack __instance)
+            public static void Prefix(Attack __instance)
             {
-                int skillLevel = Level.GetSkillLevel(Skill.Agility);
+                skillLevel = Level.GetSkillLevel(Skill.Agility);
 
-                if (skillLevel < 50) return true;
+                if (skillLevel < 50) return;
 
-                float backstabBonus = Level50Backstab.Value;                
+                float backstabBonus = Level50Backstab.Value;
                 if (skillLevel >= 200) backstabBonus += Level200Backstab.Value - 1;
-
-                Override = false;
-                OriginalValue = -1;
-
-                var weapon = __instance.m_weapon; 
+    
+                var weapon = __instance.m_weapon;
                 if (weapon == null)
                 {
-                    return true;
+                    return;
                 }
 
                 if (__instance.m_character is Player)
                 {
-                    Override = true;
                     OriginalValue = weapon.m_shared.m_backstabBonus;
-
+                    itemWeapon = weapon;
                     weapon.m_shared.m_backstabBonus *= (backstabBonus);
                 }
 
-                return true;
+                return;
             }
 
             public static void Postfix(Attack __instance)
             {
-                int skillLevel = Level.GetSkillLevel(Skill.Agility);
-
                 if (skillLevel < 50) return;
 
                 var weapon = __instance.m_weapon;
-                if (weapon != null && Override)
+                if (weapon != null && itemWeapon != null)
                 {
-                    weapon.m_shared.m_backstabBonus = OriginalValue;
+                    itemWeapon.m_shared.m_backstabBonus = OriginalValue;
+                    itemWeapon = null;
                 }
-
-                Override = false;
-                OriginalValue = -1;
             }
         }
+
+        public static void UpdateStatusEffect()
+        {
+            //int skillLevel = Level.GetSkillLevel(Skill.Agility);
+
+            //SE_Stats stats = (SE_Stats)Player.m_localPlayer.m_seman.m_statusEffects.Find(x => x.m_name == "vls_agility");
+            //if (stats != null)
+            //{
+            //    Player.m_localPlayer.m_seman.m_statusEffects.Remove(stats);
+            //}        
+
+            //if (skillLevel < 50) return;
+
+            //float backstabBonus = Level50Backstab.Value;
+            //if (skillLevel >= 200) backstabBonus += Level200Backstab.Value - 1;
+
+            //SE_Stats effect = (SE_Stats)Player.m_localPlayer.m_seman.AddStatusEffect("vls_agility");
+
+        }        
     }
 }

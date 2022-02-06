@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace MMRPGSkillSystem.PlayerSkills
+namespace ValheimLevelSystem.PlayerSkills
 {
     public class SkillManager
     {
@@ -15,6 +15,8 @@ namespace MMRPGSkillSystem.PlayerSkills
 
             GUI.UpdateSkillLevelText(skill.ToString(), newLevel);
             Level.RemovePoints();
+
+            if (skill.Equals(Skill.Agility)) Agility.UpdateStatusEffect();
         }
     }
 

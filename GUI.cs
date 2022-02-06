@@ -1,13 +1,13 @@
 ﻿using Jotunn.Managers;
-using MMRPGSkillSystem.PlayerSkills;
+using ValheimLevelSystem.PlayerSkills;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
-using SkillManager = MMRPGSkillSystem.PlayerSkills.SkillManager;
+using SkillManager = ValheimLevelSystem.PlayerSkills.SkillManager;
 
-namespace MMRPGSkillSystem
+namespace ValheimLevelSystem
 {
     class GUI
     {
@@ -183,13 +183,13 @@ namespace MMRPGSkillSystem
                  parent: ValheimLevelSystem.Menu.transform,
                  anchorMin: new Vector2(0.5f, 1f),
                  anchorMax: new Vector2(0.5f, 1f),
-                position: new Vector2(-100f, -570),
+                position: new Vector2(-25f, -570),
                  font: GUIManager.Instance.AveriaSerifBold,
                  fontSize: 15,
                  color: GUIManager.Instance.ValheimOrange,
                  outline: true,
                  outlineColor: Color.black,
-                 width: 150f,
+                 width: 300f,
                  height: 20f,
                  addContentSizeFitter: false);
             ValheimLevelSystem.menuItems.Add("ExpText", expTextObject);

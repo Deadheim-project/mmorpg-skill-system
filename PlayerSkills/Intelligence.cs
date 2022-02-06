@@ -6,7 +6,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace MMRPGSkillSystem.PlayerSkills
+namespace ValheimLevelSystem.PlayerSkills
 {
     public class Intelligence
     {
@@ -276,7 +276,7 @@ namespace MMRPGSkillSystem.PlayerSkills
                     extraLevelbar.GetComponent<Image>().color = Color.red;
                     extraLevelbar.transform.SetSiblingIndex(levelbar.GetSiblingIndex());
                     Transform levelText = Utils.FindChild(gameObject.transform, "leveltext");
-                    levelText.GetComponent<Text>().text += $" <color=red>+{Level150AllSkillBonus}</color>";
+                    levelText.GetComponent<Text>().text += $" <color=cyan>+{Level150AllSkillBonus}</color>";
                 }
             }
         }

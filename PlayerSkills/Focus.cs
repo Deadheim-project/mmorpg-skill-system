@@ -1,7 +1,7 @@
 ﻿using BepInEx.Configuration;
 using HarmonyLib;
 
-namespace MMRPGSkillSystem.PlayerSkills
+namespace ValheimLevelSystem.PlayerSkills
 {
     public class Focus
     {

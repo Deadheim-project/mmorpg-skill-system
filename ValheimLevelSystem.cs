@@ -6,9 +6,12 @@ using Jotunn.Utils;
 using HarmonyLib;
 using Jotunn.Managers;
 using System;
-using MMRPGSkillSystem.PlayerSkills;
+using ValheimLevelSystem.PlayerSkills;
+using System.Reflection;
+using System.IO;
+using System.Linq;
 
-namespace MMRPGSkillSystem
+namespace ValheimLevelSystem
 {
     [BepInPlugin(PluginGUID, PluginGUID, Version)]
     [BepInDependency(Jotunn.Main.ModGuid)]
@@ -38,11 +41,13 @@ namespace MMRPGSkillSystem
         public static ConfigEntry<bool> ShowExpText;
         public static ConfigEntry<bool> RequiresTokenToResetSkill;
         public static ConfigEntry<bool> ShowLevelOnName;
+        public static ConfigEntry<bool> OnlyGiveExpIfDamageComesFromPlayer;
         public static ConfigEntry<int> StartingPoints;
         public static ConfigEntry<int> MaxLevel;
         public static ConfigEntry<int> PointsPerLevel;
         public static ConfigEntry<int> LevelToStartGivingExtraPoint;
         public static ConfigEntry<int> BaseExpPerLevel;
+        public static ConfigEntry<int> RangeToDivideExp;
         public static ConfigEntry<float> ExpMultiplierPerLevel;
         public static ConfigEntry<KeyCode> KeyboardShortcut;
 
@@ -99,6 +104,15 @@ namespace MMRPGSkillSystem
             ExpTable.InitMonsterExpList();
         }
 
+        public static AssetBundle GetAssetBundleFromResources(string fileName)
+        {
+            Assembly executingAssembly = Assembly.GetExecutingAssembly();
+            string text = executingAssembly.GetManifestResourceNames().Single((string str) => str.EndsWith(fileName));
+            using Stream stream = executingAssembly.GetManifestResourceStream(text);
+            return AssetBundle.LoadFromStream(stream);
+        }
+
+
         private void Update()
         {
             if (Input.GetKeyDown(KeyboardShortcut.Value))
@@ -113,9 +127,20 @@ namespace MMRPGSkillSystem
 
         public void InitConfigs()
         {
+
+            RangeToDivideExp = Config.Bind("Server config", "RangeToDivideExp", 100,
+       new ConfigDescription("RangeToDivideExp",
+           new AcceptableValueRange<int>(1, 1000), null,
+                new ConfigurationManagerAttributes { IsAdminOnly = true }));
+
             RequiresTokenToResetSkill = Config.Bind("Server config", "RequiresTokenToResetSkill", false,
                 new ConfigDescription("RequiresTokenToResetSkill", null,
                          new ConfigurationManagerAttributes { IsAdminOnly = true }));
+
+            OnlyGiveExpIfDamageComesFromPlayer = Config.Bind("Server config", "OnlyGiveExpIfDamageComesFromPlayer", false,
+    new ConfigDescription("OnlyGiveExpIfDamageComesFromPlayer", null,
+             new ConfigurationManagerAttributes { IsAdminOnly = true }));
+
 
             ShowExpText = Config.Bind("Server config", "ShowExpText", true,
     new ConfigDescription("ShowExpText", null,
