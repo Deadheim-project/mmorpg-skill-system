@@ -108,6 +108,10 @@ namespace ValheimLevelSystem.PlayerSkills
                     return;
                 }
 
+                Character attacker = hit.GetAttacker();
+
+                if (attacker == __instance) return;
+
                 skillLevel = Level.GetSkillLevel(Skill.Focus);
 
                 if (skillLevel < 50) return;

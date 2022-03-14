@@ -5,11 +5,7 @@ using BepInEx.Configuration;
 using Jotunn.Utils;
 using HarmonyLib;
 using Jotunn.Managers;
-using System;
 using ValheimLevelSystem.PlayerSkills;
-using System.Reflection;
-using System.IO;
-using System.Linq;
 
 namespace ValheimLevelSystem
 {
@@ -20,7 +16,7 @@ namespace ValheimLevelSystem
     {
         public const string PluginGUID = "Detalhes.ValheimLevelSystem";
         public const string Name = "ValheimLevelSystem";
-        public const string Version = "1.1.9";
+        public const string Version = "1.2.4";
 
         public static bool listInitiliazed = false;
 
@@ -38,6 +34,7 @@ namespace ValheimLevelSystem
         public static Dictionary<string, GameObject> menuItems = new Dictionary<string, GameObject>();
 
         public static ConfigEntry<int> ExpRate;
+        public static ConfigEntry<int> ExpPercentageBonusPerStar;
         public static ConfigEntry<bool> ShowExpText;
         public static ConfigEntry<bool> RequiresTokenToResetSkill;
         public static ConfigEntry<bool> ShowLevelOnName;
@@ -104,15 +101,6 @@ namespace ValheimLevelSystem
             ExpTable.InitMonsterExpList();
         }
 
-        public static AssetBundle GetAssetBundleFromResources(string fileName)
-        {
-            Assembly executingAssembly = Assembly.GetExecutingAssembly();
-            string text = executingAssembly.GetManifestResourceNames().Single((string str) => str.EndsWith(fileName));
-            using Stream stream = executingAssembly.GetManifestResourceStream(text);
-            return AssetBundle.LoadFromStream(stream);
-        }
-
-
         private void Update()
         {
             if (Input.GetKeyDown(KeyboardShortcut.Value))
@@ -122,6 +110,27 @@ namespace ValheimLevelSystem
                     return;
 
                 GUI.ToggleMenu();
+            }
+        }
+
+        public static bool hasAwake = false;
+        [HarmonyPatch(typeof(Game), "Logout")]
+        public static class Logout
+        {
+            private static void Postfix()
+            {
+                hasAwake = false;
+            }
+        }
+
+        [HarmonyPatch(typeof(Player), "OnSpawned")]
+        public static class OnSpawned
+        {
+            private static void Postfix()
+            {
+                if (hasAwake == true) return;
+                hasAwake = true;
+                GUI.LoadMenu();
             }
         }
 
@@ -159,6 +168,12 @@ namespace ValheimLevelSystem
        new ConfigDescription("BossExpMultiplier",
            new AcceptableValueRange<int>(1, 100), null,
                 new ConfigurationManagerAttributes { IsAdminOnly = true }));
+
+            ExpPercentageBonusPerStar = Config.Bind("Server config", "ExpPercentageBonusPerStar", 25,
+new ConfigDescription("ExpPercentageBonusPerStar",
+new AcceptableValueRange<int>(1, 100), null,
+    new ConfigurationManagerAttributes { IsAdminOnly = true }));
+
 
 
             StartingPoints = Config.Bind("Server config", "StartingPoints", 15,

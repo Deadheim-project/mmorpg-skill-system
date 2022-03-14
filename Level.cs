@@ -39,7 +39,7 @@ namespace ValheimLevelSystem
 
         public static void RaiseExpWithValues(int expAmount, int level, bool boss = false)
         {         
-            float exp = expAmount + ((expAmount / 100f) * (level * 10f));
+            float exp = expAmount + ((expAmount / 100f) * (level * ValheimLevelSystem.ExpPercentageBonusPerStar.Value));
 
             if (boss) exp *= ValheimLevelSystem.BossExpMultiplier.Value;
 

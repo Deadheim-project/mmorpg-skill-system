@@ -181,102 +181,33 @@ namespace ValheimLevelSystem.PlayerSkills
             }
         }
 
-        public static float MagicDamageMultiplier = 0;
-        [HarmonyPatch]
-        public class AddMagicDamage
+        [HarmonyPatch(typeof(ItemDrop.ItemData), nameof(ItemDrop.ItemData.GetDamage), typeof(int))]
+        public class GetDamage
         {
-            [HarmonyPatch(typeof(Character), nameof(Character.AddFrostDamage))]
-            [HarmonyPrefix]
-            public static void AddFrostDamage(Character __instance, ref float damage)
+            public static void Postfix(ItemDrop.ItemData __instance, ref HitData.DamageTypes __result)
             {
+
                 if (Player.m_localPlayer == null) return;
-                if (!__instance.IsPlayer()) return;
+
+                if (!Player.m_localPlayer.m_inventory.m_inventory.Exists(x => x == __instance)) return;
 
                 skillLevel = Level.GetSkillLevel(Skill.Intelligence);
 
                 if (skillLevel < 1) return;
 
-                if (Intelligence.MagicDamageMultiplier == 0) UpdateMagicDamageMultiplier(skillLevel);
+                var magicDamageMultier = 1 + (skillLevel / 100f) * (PassiveMagicDamage.Value - 1);
 
-                damage *= MagicDamageMultiplier;
+                if (skillLevel > 50) magicDamageMultier += Level50MagicDamage.Value - 1;
+
+                if (skillLevel >= 100) magicDamageMultier += Level150MagicDamage.Value - 1;
+
+                __result.m_fire *= magicDamageMultier;
+                __result.m_frost *= magicDamageMultier;
+                __result.m_lightning *= magicDamageMultier;
+                __result.m_poison *= magicDamageMultier;
+                __result.m_spirit *= magicDamageMultier;
             }
-
-            [HarmonyPatch(typeof(Character), nameof(Character.AddFireDamage))]
-            [HarmonyPrefix]
-            public static void AddFireDamage(Character __instance, ref float damage)
-            {
-                if (Player.m_localPlayer == null) return;
-                if (!__instance.IsPlayer()) return;
-
-                skillLevel = Level.GetSkillLevel(Skill.Intelligence);
-
-                if (skillLevel < 1) return;
-
-                if (Intelligence.MagicDamageMultiplier == 0) UpdateMagicDamageMultiplier(skillLevel);
-
-                damage *= MagicDamageMultiplier;
-            }
-
-            [HarmonyPatch(typeof(Character), nameof(Character.AddPoisonDamage))]
-            [HarmonyPrefix]
-            public static void AddPoisonDamage(Character __instance, ref float damage)
-            {
-                if (Player.m_localPlayer == null) return;
-                if (!__instance.IsPlayer()) return;
-
-                skillLevel = Level.GetSkillLevel(Skill.Intelligence);
-
-                if (skillLevel < 1) return;
-
-                if (Intelligence.MagicDamageMultiplier == 0) UpdateMagicDamageMultiplier(skillLevel);
-
-                damage *= MagicDamageMultiplier;
-            }
-
-            [HarmonyPatch(typeof(Character), nameof(Character.AddLightningDamage))]
-            [HarmonyPrefix]
-            public static void AddLightningDamage(Character __instance, ref float damage)
-            {
-                Debug.LogError("aqui");
-                if (Player.m_localPlayer == null) return;
-                if (!__instance.IsPlayer()) return;
-
-                skillLevel = Level.GetSkillLevel(Skill.Intelligence);
-
-                if (skillLevel < 1) return;
-
-                if (Intelligence.MagicDamageMultiplier == 0) UpdateMagicDamageMultiplier(skillLevel);
-
-                damage *= MagicDamageMultiplier;
-            }
-
-            [HarmonyPatch(typeof(Character), nameof(Character.AddSpiritDamage))]
-            [HarmonyPrefix]
-            public static void AddSpiritDamage(Character __instance, ref float damage)
-            {
-                if (Player.m_localPlayer == null) return;
-                if (!__instance.IsPlayer()) return;
-
-                skillLevel = Level.GetSkillLevel(Skill.Intelligence);
-
-                if (skillLevel < 1) return;
-
-                if (Intelligence.MagicDamageMultiplier == 0) UpdateMagicDamageMultiplier(skillLevel);
-
-                damage *= MagicDamageMultiplier;
-            }
-
-            static private void UpdateMagicDamageMultiplier(int skillLevel)
-            {
-                var MagicDamageMultiplier = 1 + (skillLevel / 100f) * (PassiveMagicDamage.Value - 1);
-
-                if (skillLevel > 50) MagicDamageMultiplier += Level50MagicDamage.Value - 1;
-
-                if (skillLevel >= 100) MagicDamageMultiplier += Level150MagicDamage.Value - 1;
-            }
-
         }
-
 
         [HarmonyPatch(typeof(Skills), nameof(Skills.GetSkillFactor))]
         public static class GetSkillFactor
