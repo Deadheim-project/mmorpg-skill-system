@@ -382,7 +382,7 @@ namespace ValheimLevelSystem
 
             if (skillLevel >= 200)
             {
-                txt.GetComponent<Text>().text += "\n Int 200: +" + (Intelligence.Level200Atackspeed.Value - 1) * 100 + "% Attack speed";
+                txt.GetComponent<Text>().text += "\n Int 200: +" + Intelligence.Level200AllSkillsBonus.Value + " all skills points";
                 txt.GetComponent<Text>().text += "\n Int 200: +" + Intelligence.Level200ComfortBonus.Value + " comfort";
             }
         }
@@ -402,7 +402,7 @@ namespace ValheimLevelSystem
             if (skillLevel >= 50)
             {
                 txt.GetComponent<Text>().text += "\n Agi 50: +" + Math.Round((Agility.Level50RunSpeed.Value - 1) * 100,2) + "% move speed";
-                txt.GetComponent<Text>().text += "\n Agi 50: +" + (Agility.Level50Backstab.Value - 1) * 100 + "% backstab damage";
+                txt.GetComponent<Text>().text += "\n Agi 50: +" + (Agility.Level50SpearAndPolearmDamage.Value - 1) * 100 + "% Spear and polearm damage";
             }                                            
                                                          
             if (skillLevel >= 100)                       
@@ -414,14 +414,13 @@ namespace ValheimLevelSystem
             if (skillLevel >= 150)                       
             {                                            
                 txt.GetComponent<Text>().text += "\n Agi 150: +" + (Agility.Level150RunSpeed.Value - 1) * 100 + "% move speed";
-                txt.GetComponent<Text>().text += "\n Agi 150:  +" + (Agility.Level150SpearAndPolearmDamage.Value - 1) * 100 + "% Spears and polearm damage";
+                txt.GetComponent<Text>().text += "\n Agi 150:  +" + (Agility.Level150SpearAndPolearmDamage.Value - 1) * 100 + "% Spear and polearm damage";
             }                                            
                                                          
             if (skillLevel >= 200)                       
             {                                            
-                txt.GetComponent<Text>().text += "\n Agi 200: +" + (Agility.Level200Backstab.Value - 1) * 100 + "% backstab";
                 txt.GetComponent<Text>().text += "\n Agi 200: +" + (Agility.Level200RunSpeed.Value- 1) * 100 + "% movespeed";
-                txt.GetComponent<Text>().text += "\n Agi 200: +" + (Agility.Level200BowKnivesDamage.Value - 1) * 100 + "% Knives and Bows damage";
+                txt.GetComponent<Text>().text += "\n Agi 200: +" + (Agility.Level200BowKnivesDamage.Value - 1) * 100 + "% Bow and knife damage";
             }
         }
 
@@ -453,7 +452,7 @@ namespace ValheimLevelSystem
 
             if (skillLevel >= 150)
             {
-                txt.GetComponent<Text>().text += "\n Str 150: +" + (Strength.Level150SpeedMultiplierOneHanded.Value - 1) * 100 + " One-handed speed";
+                txt.GetComponent<Text>().text += "\n Str 150: +" + (Strength.Level150ReduceAttackStamina.Value - 1) * 100 + "% attack stamina";
                 txt.GetComponent<Text>().text += "\n Str 150:  +" + (Strength.Level150SwordsDamage.Value - 1) * 100 + "% Sword damage";
                 txt.GetComponent<Text>().text += "\n Str 150:  +" + Strength.Level150CarryWeight.Value + " carry weight";
             }
@@ -461,7 +460,7 @@ namespace ValheimLevelSystem
             if (skillLevel >= 200)
             {
                 txt.GetComponent<Text>().text += "\n Str 200: +" + (Strength.Level200OneTwoHandedDamage.Value - 1) * 100 + "% damage";
-                txt.GetComponent<Text>().text += "\n Str 200: +" + Math.Round((Strength.Level200SpeedMultiplierTwoHanded.Value - 1) * 100, 2) + "% Two-handed speed";
+                txt.GetComponent<Text>().text += "\n Str 200: +" + Math.Round((Strength.Level200ReduceAttackStamina.Value - 1) * 100, 2) + "% attack stamina";
             }
         }
 

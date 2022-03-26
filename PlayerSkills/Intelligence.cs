@@ -1,6 +1,5 @@
 ﻿using BepInEx.Configuration;
 using HarmonyLib;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -17,8 +16,8 @@ namespace ValheimLevelSystem.PlayerSkills
         public static ConfigEntry<float> Level100QuickLearner;
         public static ConfigEntry<float> Level100BuffAndPotionsCooldown;
         public static ConfigEntry<float> Level150MagicDamage;
-        public static ConfigEntry<float> Level150AllSkillBonus;
-        public static ConfigEntry<float> Level200Atackspeed;
+        public static ConfigEntry<int> Level150AllSkillBonus;
+        public static ConfigEntry<int> Level200AllSkillsBonus;
         public static ConfigEntry<float> Level200ComfortBonus;
 
         public static int skillLevel = 1;
@@ -57,12 +56,12 @@ namespace ValheimLevelSystem.PlayerSkills
                     new ConfigDescription("Level150MagicDamage", null, null,
                     new ConfigurationManagerAttributes { IsAdminOnly = true }));
 
-            Level150AllSkillBonus = config.Bind("Intelligence Server config", "Level150AllSkillBonus", 10f,
+            Level150AllSkillBonus = config.Bind("Intelligence Server config", "Level150AllSkillBonus", 10,
                     new ConfigDescription("Level150AllSkillBonus", null, null,
                     new ConfigurationManagerAttributes { IsAdminOnly = true }));
 
-            Level200Atackspeed = config.Bind("Intelligence Server config", "Level200Atackspeed", 1.1f,
-                    new ConfigDescription("Level200Atackspeed", null, null,
+            Level200AllSkillsBonus = config.Bind("Intelligence Server config", "Level200AllSkillsBonus", 10,
+                    new ConfigDescription("Level200AllSkillsBonus", null, null,
                     new ConfigurationManagerAttributes { IsAdminOnly = true }));
 
             Level200ComfortBonus = config.Bind("Intelligence Server config", "Level200ComfortBonus", 20f,
@@ -113,71 +112,6 @@ namespace ValheimLevelSystem.PlayerSkills
                 if (skillLevel < 50) return;
 
                 __instance.m_equipmentMovementModifier += Level50MoveSpeed.Value - 1;
-            }
-        }
-
-        public static float ChangeSpeed(Character character, Animator animator, float speed)
-        {
-            if (character is Player)
-            {
-                var player = (Player)character;
-
-                if (Player.m_localPlayer != player) return animator.speed;
-
-                long id = player.GetPlayerID();
-                string name = animator.GetCurrentAnimatorClipInfo(0)[0].clip.name;
-                float newSpeed = animator.speed * speed;
-                if (!lastAnimations.ContainsKey(id) || lastAnimations[id] != name)
-                {
-                    lastAnimations[id] = name;
-                    return newSpeed;
-                }
-            }
-            return animator.speed;
-        }
-
-
-        [HarmonyPatch(typeof(CharacterAnimEvent), "FixedUpdate")]
-        static class CharacterAnimEventFixedUpdate
-        {
-            static void Prefix(ref Animator ___m_animator, Character ___m_character)
-            {
-                if (Player.m_localPlayer == null) return;
-
-                skillLevel = Level.GetSkillLevel(Skill.Intelligence);
-                if (skillLevel < 200) return;
-
-                if (!(___m_character is Humanoid) || Player.m_localPlayer == null || (___m_character is Player && (___m_character as Player).GetPlayerID() != Player.m_localPlayer.GetPlayerID()))
-                    return;
-
-                if (___m_animator?.GetCurrentAnimatorClipInfo(0)?.Any() != true || ___m_animator.GetCurrentAnimatorClipInfo(0)[0].clip == null)
-                {
-                    return;
-                }
-
-                if (___m_animator.GetCurrentAnimatorClipInfo(0)[0].clip.name.StartsWith("Attack"))
-                {
-                    var itemType = (___m_character as Humanoid).GetCurrentWeapon()?.m_shared.m_itemType;
-                    if (itemType == ItemDrop.ItemData.ItemType.OneHandedWeapon)
-                        ___m_animator.speed = ChangeSpeed(___m_character, ___m_animator, Level200Atackspeed.Value);
-                }
-            }
-        }
-
-        public static Dictionary<long, string> lastAnimations = new Dictionary<long, string>();
-
-        [HarmonyPatch(typeof(CharacterAnimEvent), "Speed")]
-        static class CharacterAnimEvent_Speed_Patch
-        {
-            static void Postfix(ref Animator ___m_animator, Character ___m_character, float speedScale)
-            {
-                if (Player.m_localPlayer == null) return;
-
-                skillLevel = Level.GetSkillLevel(Skill.Intelligence);
-                if (skillLevel < 150) return;
-
-                if (___m_character is Player)
-                    lastAnimations.Remove((___m_character as Player).GetPlayerID());
             }
         }
 
@@ -267,6 +201,9 @@ namespace ValheimLevelSystem.PlayerSkills
                 skillLevel = Level.GetSkillLevel(Skill.Intelligence);
 
                 if (skillLevel < 150) return;
+                int bonus = Level150AllSkillBonus.Value;
+                if (skillLevel >= 200) bonus += Level200AllSkillsBonus.Value;
+
                 foreach (GameObject gameObject in __instance.m_elements)
                 {
                     Skills.Skill skill = player.m_skills.GetSkillList().Find(s => s.m_info.m_description == gameObject.GetComponentInChildren<UITooltip>().m_text);
@@ -274,7 +211,7 @@ namespace ValheimLevelSystem.PlayerSkills
                     Transform levelbar = Utils.FindChild(gameObject.transform, "bar");
                     GameObject extraLevelbar = UnityEngine.Object.Instantiate(levelbar.gameObject, levelbar.parent);
                     RectTransform rect = extraLevelbar.GetComponent<RectTransform>();
-                    rect.sizeDelta = new Vector2((skill.m_level + Level150AllSkillBonus.Value) * 1.6f, rect.sizeDelta.y);
+                    rect.sizeDelta = new Vector2((skill.m_level + bonus) * 1.6f, rect.sizeDelta.y);
                     extraLevelbar.GetComponent<Image>().color = Color.red;
                     extraLevelbar.transform.SetSiblingIndex(levelbar.GetSiblingIndex());
                     Transform levelText = Utils.FindChild(gameObject.transform, "leveltext");

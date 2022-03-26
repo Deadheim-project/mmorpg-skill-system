@@ -16,7 +16,7 @@ namespace ValheimLevelSystem
     {
         public const string PluginGUID = "Detalhes.ValheimLevelSystem";
         public const string Name = "ValheimLevelSystem";
-        public const string Version = "1.2.4";
+        public const string Version = "1.3.0";
 
         public static bool listInitiliazed = false;
 
@@ -35,6 +35,7 @@ namespace ValheimLevelSystem
 
         public static ConfigEntry<int> ExpRate;
         public static ConfigEntry<int> ExpPercentageBonusPerStar;
+        public static ConfigEntry<int> ExpToDivideWhenNotKilledByPlayer;
         public static ConfigEntry<bool> ShowExpText;
         public static ConfigEntry<bool> RequiresTokenToResetSkill;
         public static ConfigEntry<bool> ShowLevelOnName;
@@ -45,6 +46,7 @@ namespace ValheimLevelSystem
         public static ConfigEntry<int> LevelToStartGivingExtraPoint;
         public static ConfigEntry<int> BaseExpPerLevel;
         public static ConfigEntry<int> RangeToDivideExp;
+        public static ConfigEntry<float> ExpPercentageToLoseOnDeath;
         public static ConfigEntry<float> ExpMultiplierPerLevel;
         public static ConfigEntry<KeyCode> KeyboardShortcut;
 
@@ -130,6 +132,8 @@ namespace ValheimLevelSystem
             {
                 if (hasAwake == true) return;
                 hasAwake = true;
+                Level.InitLevelRequirementList();
+                ExpTable.InitMonsterExpList();
                 GUI.LoadMenu();
             }
         }
@@ -149,6 +153,11 @@ namespace ValheimLevelSystem
             OnlyGiveExpIfDamageComesFromPlayer = Config.Bind("Server config", "OnlyGiveExpIfDamageComesFromPlayer", false,
     new ConfigDescription("OnlyGiveExpIfDamageComesFromPlayer", null,
              new ConfigurationManagerAttributes { IsAdminOnly = true }));
+
+            ExpPercentageToLoseOnDeath = Config.Bind("Server config", "ExpPercentageToLoseOnDeath", 5.3f,
+new ConfigDescription("ExpPercentageToLoseOnDeath", null,
+new AcceptableValueRange<float>(0, 100), null,
+ new ConfigurationManagerAttributes { IsAdminOnly = true }));
 
 
             ShowExpText = Config.Bind("Server config", "ShowExpText", true,
@@ -174,7 +183,10 @@ new ConfigDescription("ExpPercentageBonusPerStar",
 new AcceptableValueRange<int>(1, 100), null,
     new ConfigurationManagerAttributes { IsAdminOnly = true }));
 
-
+            ExpToDivideWhenNotKilledByPlayer = Config.Bind("Server config", "ExpToDivideWhenNotKilledByPlayer", 3,
+new ConfigDescription("ExpToDivideWhenNotKilledByPlayer",
+new AcceptableValueRange<int>(1, 100), null,
+    new ConfigurationManagerAttributes { IsAdminOnly = true }));
 
             StartingPoints = Config.Bind("Server config", "StartingPoints", 15,
                new ConfigDescription("StartingPoints",

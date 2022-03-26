@@ -23,10 +23,12 @@ namespace ValheimLevelSystem
             string[] splited = pkg.ReadString().Split(',');
             int x = Convert.ToInt32(splited[0]);
             int y = Convert.ToInt32(splited[1]);
-            string name = (splited[2]);
-            int level = Convert.ToInt32(splited[3]);
+            int z = Convert.ToInt32(splited[2]);
+            string name = (splited[3]);
+            int level = Convert.ToInt32(splited[4]);
+            bool killedByPlayer = Convert.ToBoolean(splited[5]);
 
-            if ((double)Vector2.Distance(new Vector2(x, y), Player.m_localPlayer.transform.position) >= (double)ValheimLevelSystem.RangeToDivideExp.Value)
+            if ((double)Vector3.Distance(new Vector3(x: x, y: y, z:z), Player.m_localPlayer.transform.position) >= (double)ValheimLevelSystem.RangeToDivideExp.Value)
             {
                 return;
             }
@@ -39,8 +41,12 @@ namespace ValheimLevelSystem
                 return;
             }
             Character character = PrefabManager.Instance.GetPrefab(name).GetComponent<Character>();
- 
-            Level.RaiseExpWithValues(monster.ExpAmount, level, character.m_faction == Character.Faction.Boss);
+
+            int expToGive = monster.ExpAmount;
+
+            if (!killedByPlayer) expToGive /= ValheimLevelSystem.ExpToDivideWhenNotKilledByPlayer.Value;
+
+            Level.RaiseExpWithValues(expToGive, level, character.m_faction == Character.Faction.Boss);
         }
     }
 }

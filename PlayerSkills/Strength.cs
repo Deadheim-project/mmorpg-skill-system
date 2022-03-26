@@ -18,8 +18,8 @@ namespace ValheimLevelSystem.PlayerSkills
         public static ConfigEntry<float> Level100ReduceAttackStamina;
         public static ConfigEntry<float> Level150SwordsDamage;
         public static ConfigEntry<float> Level150CarryWeight;
-        public static ConfigEntry<float> Level150SpeedMultiplierOneHanded;
-        public static ConfigEntry<float> Level200SpeedMultiplierTwoHanded;
+        public static ConfigEntry<float> Level150ReduceAttackStamina;
+        public static ConfigEntry<float> Level200ReduceAttackStamina;
         public static ConfigEntry<float> Level200OneTwoHandedDamage;
 
         public static void InitConfigs(ConfigFile config)
@@ -61,12 +61,12 @@ namespace ValheimLevelSystem.PlayerSkills
                     new ConfigDescription("Level150SwordsDamage", null, null,
                     new ConfigurationManagerAttributes { IsAdminOnly = true }));
 
-            Level150SpeedMultiplierOneHanded = config.Bind("Strength Server config", "Level150SpeedMultiplierOneHanded", 1.1f,
-                    new ConfigDescription("Level150SpeedMultiplierOneHanded", null, null,
+            Level150ReduceAttackStamina = config.Bind("Strength Server config", "Level150ReduceAttackStamina", 1.1f,
+                    new ConfigDescription("Level150ReduceAttackStamina", null, null,
                     new ConfigurationManagerAttributes { IsAdminOnly = true }));
 
-            Level200SpeedMultiplierTwoHanded = config.Bind("Strength Server config", "Level200SpeedMultiplierTwoHanded", 1.05f,
-                    new ConfigDescription("Level200SpeedMultiplierTwoHanded", null, null,
+            Level200ReduceAttackStamina = config.Bind("Strength Server config", "Level200ReduceAttackStamina", 1.15f,
+                    new ConfigDescription("Level200ReduceAttackStamina", null, null,
                     new ConfigurationManagerAttributes { IsAdminOnly = true }));
 
             Level200OneTwoHandedDamage = config.Bind("Strength Server config", "Level200OneTwoHandedDamage", 1.15f,
@@ -155,7 +155,10 @@ namespace ValheimLevelSystem.PlayerSkills
 
                     if (skillLevel >= 100)
                     {
-                        __result *= 1 - (Level100ReduceAttackStamina.Value - 1);
+                        float bonus = Level100ReduceAttackStamina.Value;
+                        if (skillLevel >= 150) bonus += Level150ReduceAttackStamina.Value - 1;
+                        if (skillLevel >= 200) bonus += Level200ReduceAttackStamina.Value - 1;
+                        __result *= 1 - (bonus - 1);
                     }
                 }
             }
@@ -188,90 +191,6 @@ namespace ValheimLevelSystem.PlayerSkills
 
                 }
             }
-        }
-
-        public static Dictionary<long, string> lastAnimations = new Dictionary<long, string>();
-
-        [HarmonyPatch(typeof(CharacterAnimEvent), "Speed")]
-        static class CharacterAnimEvent_Speed_Patch
-        {
-            static void Postfix(ref Animator ___m_animator, Character ___m_character, float speedScale)
-            {
-                try
-                {
-                    if (Player.m_localPlayer == null) return;
-
-                    int skillLevel = Level.GetSkillLevel(Skill.Strength);
-                    if (skillLevel < 150) return;
-
-                    if (___m_character is Player)
-                        lastAnimations.Remove((___m_character as Player).GetPlayerID());
-                }
-                catch
-                {
-
-                }
-
-            }
-        }
-
-        [HarmonyPatch(typeof(CharacterAnimEvent), "FixedUpdate")]
-        static class CharacterAnimEventFixedUpdate
-        {
-            static void Prefix(ref Animator ___m_animator, Character ___m_character)
-            {
-                try
-                {
-                    if (Player.m_localPlayer == null) return;
-
-                    int skillLevel = Level.GetSkillLevel(Skill.Strength);
-                    if (skillLevel < 150) return;
-
-                    if (!(___m_character is Humanoid) || Player.m_localPlayer == null || (___m_character is Player && (___m_character as Player).GetPlayerID() != Player.m_localPlayer.GetPlayerID()))
-                        return;
-
-                    if (___m_animator?.GetCurrentAnimatorClipInfo(0)?.Any() != true || ___m_animator.GetCurrentAnimatorClipInfo(0)[0].clip == null)
-                    {
-                        return;
-                    }
-
-                    if (___m_animator.GetCurrentAnimatorClipInfo(0)[0].clip.name.StartsWith("Attack"))
-                    {
-                        var itemType = (___m_character as Humanoid).GetCurrentWeapon()?.m_shared.m_itemType;
-                        if (itemType == ItemDrop.ItemData.ItemType.OneHandedWeapon)
-                            ___m_animator.speed = ChangeSpeed(___m_character, ___m_animator, Level150SpeedMultiplierOneHanded.Value);
-
-                        if (skillLevel < 200) return;
-                        if (itemType == ItemDrop.ItemData.ItemType.TwoHandedWeapon)
-                            ___m_animator.speed = ChangeSpeed(___m_character, ___m_animator, Level200SpeedMultiplierTwoHanded.Value);
-
-                    }
-                }
-                catch
-                {
-
-                }
-            }
-        }
-
-        public static float ChangeSpeed(Character character, Animator animator, float speed)
-        {
-            if (character is Player)
-            {
-                var player = (Player)character;
-
-                if (Player.m_localPlayer != player) return animator.speed;
-
-                long id = player.GetPlayerID();
-                string name = animator.GetCurrentAnimatorClipInfo(0)[0].clip.name;
-                float newSpeed = animator.speed * speed;
-                if (!lastAnimations.ContainsKey(id) || lastAnimations[id] != name)
-                {
-                    lastAnimations[id] = name;
-                    return newSpeed;
-                }
-            }
-            return animator.speed;
         }
     }
 }

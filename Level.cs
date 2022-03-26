@@ -9,8 +9,6 @@ namespace ValheimLevelSystem
     public class Level
     {
         public static List<LevelRequirement> LevelRequirementList { get; set; }
-        public static int PlayerCurrentLevel { get; set; }
-        public static long PlayerCurrentExp { get; set; }
 
         public static void InitLevelRequirementList()
         {
@@ -52,7 +50,7 @@ namespace ValheimLevelSystem
             if (ValheimLevelSystem.ShowExpText.Value) Player.m_localPlayer.Message(MessageHud.MessageType.TopLeft, "+" + exp + " Exp");
         }
 
-        unsafe public static void AddExp(int exp)
+        unsafe public static void AddExp(long exp)
         {
             if (!Player.m_localPlayer.m_knownTexts.ContainsKey("playerLevel"))
             {
@@ -81,6 +79,23 @@ namespace ValheimLevelSystem
             GUI.UpdateExpText();
         }
 
+        unsafe public static void RemoveExpOnDeath()
+        {
+            if (ValheimLevelSystem.ExpPercentageToLoseOnDeath.Value > 0)
+            {
+                if (Player.m_localPlayer.m_knownTexts.TryGetValue("playerExp", out string playerExp))
+                {
+                    long playerExpInt = Convert.ToInt64(playerExp);
+                    long expAmountThisLevel = Level.GetMaxExpForCurrentLevel();
+                    float expPercentageToLose = ValheimLevelSystem.ExpPercentageToLoseOnDeath.Value;
+                    long expToLose = (long)((expAmountThisLevel / 100) * expPercentageToLose);
+
+                    if (expToLose > playerExpInt) expToLose = playerExpInt;
+                    AddExp(expToLose * -1);
+                }
+            }
+        }
+
         private static void PlayerLevelUp(int currentLevel)
         {
             Player.m_localPlayer.m_knownTexts["playerExp"] = "0";
@@ -100,7 +115,7 @@ namespace ValheimLevelSystem
         public static long GetMaxExpForCurrentLevel()
         {
             Player localPlayer = Player.m_localPlayer;
-            if (!localPlayer || localPlayer.IsDead() || (localPlayer.InCutscene() || localPlayer.IsTeleporting()))
+            if (!localPlayer || (localPlayer.InCutscene() || localPlayer.IsTeleporting()))
                 return 0;
 
             LevelRequirement currentLevelRequirement = LevelRequirementList.FirstOrDefault(x => x.Level == long.Parse(Player.m_localPlayer.m_knownTexts["playerLevel"]));

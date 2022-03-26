@@ -9,13 +9,12 @@ namespace ValheimLevelSystem.PlayerSkills
         public static ConfigEntry<float> PassiveBowPolearmMultiplier;
         public static ConfigEntry<float> PassiveSpearKnifeMultiplier;
         public static ConfigEntry<float> Level50RunSpeed;
-        public static ConfigEntry<float> Level50Backstab;
+        public static ConfigEntry<float> Level50SpearAndPolearmDamage;
         public static ConfigEntry<float> Level100JumAndRunStaminaReduction;
         public static ConfigEntry<float> Level100BowKnivesDamage;
         public static ConfigEntry<float> Level150SpearAndPolearmDamage;
         public static ConfigEntry<float> Level150RunSpeed;
         public static ConfigEntry<float> Level200RunSpeed;
-        public static ConfigEntry<float> Level200Backstab;
         public static ConfigEntry<float> Level200BowKnivesDamage;
 
         public static void InitConfigs(ConfigFile config)
@@ -32,8 +31,8 @@ namespace ValheimLevelSystem.PlayerSkills
                     new ConfigDescription("Level50RunSpeed", null, null,
                     new ConfigurationManagerAttributes { IsAdminOnly = true }));
 
-            Level50Backstab = config.Bind("Agility Server config", "Level50Backstab", 1.15f,
-                     new ConfigDescription("Level50Backstab", null, null,
+            Level50SpearAndPolearmDamage = config.Bind("Agility Server config", "Level50SpearAndPolearmDamage", 1.1f,
+                     new ConfigDescription("Level50SpearAndPolearmDamage", null, null,
                      new ConfigurationManagerAttributes { IsAdminOnly = true }));
 
             Level100BowKnivesDamage = config.Bind("Agility Server config", "Level100BowKnivesDamage", 1.1f,
@@ -60,9 +59,6 @@ namespace ValheimLevelSystem.PlayerSkills
                     new ConfigDescription("Level200BowKnivesDamage", null, null,
                     new ConfigurationManagerAttributes { IsAdminOnly = true }));
 
-            Level200Backstab = config.Bind("Agility Server config", "Level200Backstab", 1.20f,
-                    new ConfigDescription("Level200Backstab", null, null,
-                    new ConfigurationManagerAttributes { IsAdminOnly = true }));
         }
 
         [HarmonyPatch(typeof(ItemDrop.ItemData), nameof(ItemDrop.ItemData.GetDamage), typeof(int))]
@@ -105,6 +101,26 @@ namespace ValheimLevelSystem.PlayerSkills
                     __result.m_spirit *= spearKnifeMultiplier;
                 }
 
+                if (skillLevel >= 50)
+                {
+                    float multiplier = Level50SpearAndPolearmDamage.Value;
+                    if (skillLevel >= 150) multiplier += (Level150SpearAndPolearmDamage.Value - 1);
+                    if (__instance.m_shared.m_skillType == Skills.SkillType.Spears || __instance.m_shared.m_skillType == Skills.SkillType.Polearms)
+                    {
+                        __result.m_blunt *= multiplier;
+                        __result.m_slash *= multiplier;
+                        __result.m_pierce *= multiplier;
+                        __result.m_chop *= multiplier;
+                        __result.m_pickaxe *= multiplier;
+                        __result.m_fire *= multiplier;
+                        __result.m_frost *= multiplier;
+                        __result.m_lightning *= multiplier;
+                        __result.m_poison *= multiplier;
+                        __result.m_spirit *= multiplier;
+                    }
+                }
+
+
                 if (skillLevel < 100) return;
 
                 var bowKnivesMultiplier = Level100BowKnivesDamage.Value;
@@ -124,23 +140,6 @@ namespace ValheimLevelSystem.PlayerSkills
                     __result.m_poison *= bowKnivesMultiplier;
                     __result.m_spirit *= bowKnivesMultiplier;
                 }
-
-                if (skillLevel >= 150)
-                {
-                    if (__instance.m_shared.m_skillType == Skills.SkillType.Spears || __instance.m_shared.m_skillType == Skills.SkillType.Polearms)
-                    {
-                        __result.m_blunt *= Level150SpearAndPolearmDamage.Value;
-                        __result.m_slash *= Level150SpearAndPolearmDamage.Value;
-                        __result.m_pierce *= Level150SpearAndPolearmDamage.Value;
-                        __result.m_chop *= Level150SpearAndPolearmDamage.Value;
-                        __result.m_pickaxe *= Level150SpearAndPolearmDamage.Value;
-                        __result.m_fire *= Level150SpearAndPolearmDamage.Value;
-                        __result.m_frost *= Level150SpearAndPolearmDamage.Value;
-                        __result.m_lightning *= Level150SpearAndPolearmDamage.Value;
-                        __result.m_poison *= Level150SpearAndPolearmDamage.Value;
-                        __result.m_spirit *= Level150SpearAndPolearmDamage.Value;
-                    }
-                }  
             }
         }
 
@@ -191,77 +190,6 @@ namespace ValheimLevelSystem.PlayerSkills
                 if (skillLevel >= 200) movespeedBonus += Level200RunSpeed.Value - 1;
 
                 __instance.m_equipmentMovementModifier += movespeedBonus;
-            }
-        }
-
-        [HarmonyPatch(typeof(Attack), nameof(Attack.DoAreaAttack))]
-        public static class DoAreaAttack
-        {
-            [HarmonyPriority(Priority.First)]
-            private static void Prefix(Attack __instance) { ModifyBackstab.Prefix(__instance); }
-            [HarmonyPriority(Priority.Last)]
-            private static void Postfix(Attack __instance) { ModifyBackstab.Postfix(__instance); }
-        }
-
-        [HarmonyPatch(typeof(Attack), nameof(Attack.DoMeleeAttack))]
-        public static class DoMeleeAttack
-        {
-            [HarmonyPriority(Priority.First)]
-            private static void Prefix(Attack __instance) { ModifyBackstab.Prefix(__instance); }
-            [HarmonyPriority(Priority.Last)]
-            private static void Postfix(Attack __instance) { ModifyBackstab.Postfix(__instance); }
-        }
-
-        [HarmonyPatch(typeof(Attack), nameof(Attack.FireProjectileBurst))]
-        public static class FireProjectileBurst
-        {
-            [HarmonyPriority(Priority.First)]
-            private static void Prefix(Attack __instance) { ModifyBackstab.Prefix(__instance); }
-            [HarmonyPriority(Priority.Last)]
-            private static void Postfix(Attack __instance) { ModifyBackstab.Postfix(__instance); }
-        }
-
-        public static class ModifyBackstab
-        {
-            static ItemDrop.ItemData itemWeapon = null;
-            static float OriginalValue;
-            static int skillLevel = 0;
-
-            public static void Prefix(Attack __instance)
-            {
-                skillLevel = Level.GetSkillLevel(Skill.Agility);
-
-                if (skillLevel < 50) return;
-
-                float backstabBonus = Level50Backstab.Value;
-                if (skillLevel >= 200) backstabBonus += Level200Backstab.Value - 1;
-    
-                var weapon = __instance.m_weapon;
-                if (weapon == null)
-                {
-                    return;
-                }
-
-                if (__instance.m_character is Player)
-                {
-                    OriginalValue = weapon.m_shared.m_backstabBonus;
-                    itemWeapon = weapon;
-                    weapon.m_shared.m_backstabBonus *= (backstabBonus);
-                }
-
-                return;
-            }
-
-            public static void Postfix(Attack __instance)
-            {
-                if (skillLevel < 50) return;
-
-                var weapon = __instance.m_weapon;
-                if (weapon != null && itemWeapon != null)
-                {
-                    itemWeapon.m_shared.m_backstabBonus = OriginalValue;
-                    itemWeapon = null;
-                }
             }
         }
 

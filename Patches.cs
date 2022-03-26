@@ -17,10 +17,18 @@ namespace ValheimLevelSystem
             Agility.UpdateStatusEffect();
             Player.m_localPlayer.m_nview.GetZDO().Set("playerName", ValheimLevelSystem.PlayerName + " " + Level.GetLevel());
             if (ValheimLevelSystem.listInitiliazed) return;
-            Level.InitLevelRequirementList();
-            ExpTable.InitMonsterExpList();
             ValheimLevelSystem.listInitiliazed = true;
         }
+
+        [HarmonyPatch(typeof(Player), nameof(Player.OnDeath))]
+        private static class OnDeath
+        {
+            private static void Postfix()
+            {
+                Level.RemoveExpOnDeath();
+            }
+        }
+
 
         [HarmonyPatch(typeof(Player), "SetPlayerID")]
         internal class SetPlayerID
@@ -44,38 +52,37 @@ namespace ValheimLevelSystem
         {
             public static void Postfix(Character __instance, HitData hit)
             {
+                if (!(__instance.GetHealth() <= 0f)) return;
+                
                 bool hasToBeKilledByAPlayerToGiveExp = ValheimLevelSystem.OnlyGiveExpIfDamageComesFromPlayer.Value;
 
                 if (hasToBeKilledByAPlayerToGiveExp)
                 {
-                    if (__instance.GetHealth() <= 0f && hit.GetAttacker() && hit.GetAttacker().IsPlayer())
+                    if (hit.GetAttacker() && hit.GetAttacker().IsPlayer())
                     {
                         var pkg = new ZPackage();
                         string msg = Convert.ToInt32(__instance.transform.position.x) + ",";
                         msg += Convert.ToInt32(__instance.transform.position.y) + ",";
+                        msg += Convert.ToInt32(__instance.transform.position.z) + ",";
                         msg += __instance.gameObject.name + ",";
-                        msg += __instance.GetLevel();
+                        msg += __instance.GetLevel() + ",";
+                        msg += true;
+
                         pkg.Write(msg);
                         ZRoutedRpc.instance.InvokeRoutedRPC(ZNetView.Everybody, "RaiseExp", new object[] { pkg });
                     }
-                }
-            }
-        }
-
-        [HarmonyPatch(typeof(Character), nameof(Character.OnDeath))]
-        public static class OnDeathPostfix
-        {
-            public static void Postfix(Character __instance)
-            {
-                bool hasToBeKilledByAPlayerToGiveExp = ValheimLevelSystem.OnlyGiveExpIfDamageComesFromPlayer.Value;
-
-                if (!hasToBeKilledByAPlayerToGiveExp)
+                } else
                 {
                     var pkg = new ZPackage();
                     string msg = Convert.ToInt32(__instance.transform.position.x) + ",";
                     msg += Convert.ToInt32(__instance.transform.position.y) + ",";
+                    msg += Convert.ToInt32(__instance.transform.position.z) + ",";
                     msg += __instance.gameObject.name + ",";
-                    msg += __instance.GetLevel();
+                    msg += __instance.GetLevel() + ",";
+
+                    bool killedByPlayer = hit.GetAttacker() && hit.GetAttacker().IsPlayer();
+                    msg += killedByPlayer;
+
                     pkg.Write(msg);
                     ZRoutedRpc.instance.InvokeRoutedRPC(ZNetView.Everybody, "RaiseExp", new object[] { pkg });
                 }
