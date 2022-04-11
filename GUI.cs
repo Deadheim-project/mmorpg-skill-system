@@ -384,6 +384,7 @@ namespace ValheimLevelSystem
             {
                 txt.GetComponent<Text>().text += "\n Int 200: +" + Intelligence.Level200AllSkillsBonus.Value + " all skills points";
                 txt.GetComponent<Text>().text += "\n Int 200: +" + Intelligence.Level200ComfortBonus.Value + " comfort";
+                txt.GetComponent<Text>().text += "\n Int 200: +" + Intelligence.Level200SkillHeal.Value + " Heal and Purge pressing " + Intelligence.Level200SkillKey.Value;
             }
         }
 
@@ -441,7 +442,7 @@ namespace ValheimLevelSystem
             if (skillLevel >= 50)
             {
                 txt.GetComponent<Text>().text += "\n Str 50: +" + (Strength.Level50OneHandedDamage.Value - 1) * 100 + "% One-handed damage";
-                txt.GetComponent<Text>().text += "\n Str 50: +" + Strength.Level50CarryWeight.Value + " carry weight";
+                txt.GetComponent<Text>().text += "\n Str 50: +" + Strength.Level50ParryWindowBonus.Value + " Parry window time bonus";
             }
 
             if (skillLevel >= 100)
@@ -453,8 +454,8 @@ namespace ValheimLevelSystem
             if (skillLevel >= 150)
             {
                 txt.GetComponent<Text>().text += "\n Str 150: +" + (Strength.Level150ReduceAttackStamina.Value - 1) * 100 + "% attack stamina";
-                txt.GetComponent<Text>().text += "\n Str 150:  +" + (Strength.Level150SwordsDamage.Value - 1) * 100 + "% Sword damage";
-                txt.GetComponent<Text>().text += "\n Str 150:  +" + Strength.Level150CarryWeight.Value + " carry weight";
+                txt.GetComponent<Text>().text += "\n Str 150:  +" + (Strength.Level150OneHandedDamage.Value - 1) * 100 + "% One handed damage";
+                txt.GetComponent<Text>().text += "\n Str 150:  +" + Strength.Level150ParryWindowBonus.Value + " Parry window time bonus";
             }
 
             if (skillLevel >= 200)

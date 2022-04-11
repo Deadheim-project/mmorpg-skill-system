@@ -41,6 +41,7 @@
   </PropertyGroup>
   <ItemGroup>
     <None Include="app.config" />
+    <None Include="ILRepack.targets" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="ILRepack.Lib.MSBuild.Task">
@@ -101,6 +102,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Deadheim\Deadheim\bin\Debug\BepInEx.Harmony.dll</HintPath>
     </Reference>
+    <Reference Include="Groups">
+      <HintPath>..\..\..\Desktop\valheimRfs\Groups.dll</HintPath>
+    </Reference>
     <Reference Include="UnityEngine, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Valheim\unstripped_corlib\UnityEngine.dll</HintPath>
@@ -146,6 +150,11 @@
     <Compile Include="Patches.cs" />
     <Compile Include="PlayerSkills\Reset.cs" />
     <Compile Include="ResetToken.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="GroupsAPI.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

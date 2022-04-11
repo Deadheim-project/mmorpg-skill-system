@@ -70,6 +70,8 @@ namespace ValheimLevelSystem.PlayerSkills
 
                 if (skillLevel < 1) return;
 
+                if (Player.m_localPlayer is null) return;
+
                 float spearKnifeMultiplier = ((skillLevel / 100f) * PassiveSpearKnifeMultiplier.Value) / 100f + 1;
                 float bowPolearmMultiplier = ((skillLevel / 100f) * PassiveBowPolearmMultiplier.Value) / 100f + 1;
 

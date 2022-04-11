@@ -11,12 +11,13 @@ namespace ValheimLevelSystem
 {
     [BepInPlugin(PluginGUID, PluginGUID, Version)]
     [BepInDependency(Jotunn.Main.ModGuid)]
+    [BepInDependency("org.bepinex.plugins.groups", BepInDependency.DependencyFlags.SoftDependency)]
     [NetworkCompatibility(CompatibilityLevel.EveryoneMustHaveMod, VersionStrictness.Minor)]
     public class ValheimLevelSystem : BaseUnityPlugin
     {
         public const string PluginGUID = "Detalhes.ValheimLevelSystem";
         public const string Name = "ValheimLevelSystem";
-        public const string Version = "1.3.0";
+        public const string Version = "1.5.0";
 
         public static bool listInitiliazed = false;
 
@@ -113,6 +114,8 @@ namespace ValheimLevelSystem
 
                 GUI.ToggleMenu();
             }
+
+            Intelligence.ProcessSkill(Player.m_localPlayer);
         }
 
         public static bool hasAwake = false;
@@ -212,7 +215,6 @@ new AcceptableValueRange<int>(1, 100), null,
                 new ConfigDescription("Last level exp + BaseExpPerlevel * ExpMultiplierPerlevel is exp requirement formula",
                     new AcceptableValueRange<int>(1, int.MaxValue), null,
                         new ConfigurationManagerAttributes { IsAdminOnly = true }));
-
 
             ExpMultiplierPerLevel = Config.Bind("Server config", "ExpMultiplierPerLevel", 1.03f,
                 new ConfigDescription("Last level exp + BaseExpPerlevel * ExpMultiplierPerlevel is exp requirement formula",

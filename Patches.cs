@@ -15,7 +15,9 @@ namespace ValheimLevelSystem
         private static void OnSpawnedPostfix()
         {
             Agility.UpdateStatusEffect();
-            Player.m_localPlayer.m_nview.GetZDO().Set("playerName", ValheimLevelSystem.PlayerName + " " + Level.GetLevel());
+                                  
+            if (ValheimLevelSystem.ShowLevelOnName.Value) Player.m_localPlayer.m_nview.GetZDO().Set("playerName", ValheimLevelSystem.PlayerName + " " + Level.GetLevel());
+            
             if (ValheimLevelSystem.listInitiliazed) return;
             ValheimLevelSystem.listInitiliazed = true;
         }

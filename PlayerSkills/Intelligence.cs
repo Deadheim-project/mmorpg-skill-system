@@ -2,6 +2,7 @@
 using HarmonyLib;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -19,6 +20,11 @@ namespace ValheimLevelSystem.PlayerSkills
         public static ConfigEntry<int> Level150AllSkillBonus;
         public static ConfigEntry<int> Level200AllSkillsBonus;
         public static ConfigEntry<float> Level200ComfortBonus;
+        public static ConfigEntry<int> Level200SkillHeal;
+        public static ConfigEntry<int> Level200SKillCooldown;
+        public static ConfigEntry<int> Level200SkillCost;
+        public static ConfigEntry<int> Level200SkillRange;
+        public static ConfigEntry<KeyCode> Level200SkillKey;
 
         public static int skillLevel = 1;
 
@@ -44,12 +50,8 @@ namespace ValheimLevelSystem.PlayerSkills
                     new ConfigDescription("Level100QuickLearner", null, null,
                     new ConfigurationManagerAttributes { IsAdminOnly = true }));
 
-            Level100BuffAndPotionsCooldown = config.Bind("Intelligence Server config", "Level100LifeRegen", 1.2f,
-                    new ConfigDescription("Level50CarLevel100LifeRegenryWeight", null, null,
-                    new ConfigurationManagerAttributes { IsAdminOnly = true }));
-
-            Level100BuffAndPotionsCooldown = config.Bind("Intelligence Server config", "Level100StaminaBonus", 10f,
-                    new ConfigDescription("Level100StaminaBonus", null, null,
+            Level100BuffAndPotionsCooldown = config.Bind("Intelligence Server config", "Level100BuffAndPotionsCooldown", 1.2f,
+                    new ConfigDescription("Level100BuffAndPotionsCooldown", null, null,
                     new ConfigurationManagerAttributes { IsAdminOnly = true }));
 
             Level150MagicDamage = config.Bind("Intelligence Server config", "Level150MagicDamage", 1.15f,
@@ -67,6 +69,112 @@ namespace ValheimLevelSystem.PlayerSkills
             Level200ComfortBonus = config.Bind("Intelligence Server config", "Level200ComfortBonus", 20f,
                     new ConfigDescription("Level200ComfortBonus", null, null,
                     new ConfigurationManagerAttributes { IsAdminOnly = true }));
+
+            Level200SkillHeal = config.Bind("Intelligence Server config", "Level200SkillHeal", 100,
+        new ConfigDescription("Level200SkillHeal", null, null,
+        new ConfigurationManagerAttributes { IsAdminOnly = true }));
+
+            Level200SKillCooldown = config.Bind("Intelligence Server config", "Level200SKillCooldown", 10,
+new ConfigDescription("Level200SKillCooldown", null, null,
+new ConfigurationManagerAttributes { IsAdminOnly = true }));
+
+            Level200SkillCost = config.Bind("Intelligence Server config", "Level200SkillCost", 40,
+new ConfigDescription("Level200SkillCost", null, null,
+new ConfigurationManagerAttributes { IsAdminOnly = true }));
+
+            Level200SkillRange = config.Bind("Intelligence Server config", "Level200SkillRange", 10,
+new ConfigDescription("Level200SkillRange", null, null,
+new ConfigurationManagerAttributes { IsAdminOnly = true }));
+
+
+            Level200SkillKey = config.Bind("Intelligence Server config", "Level200SkillKey", KeyCode.H,
+new ConfigDescription("Level200SkillKey", null, null,
+new ConfigurationManagerAttributes { IsAdminOnly = true }));
+        }
+
+        public static void PurgePlayers(Player player)
+        {
+            List<string> effectList = new();
+            effectList.Add("Frost");
+            effectList.Add("Smoked");
+            effectList.Add("Burning");
+            effectList.Add("Poison");
+            effectList.Add("Wet");
+
+            List<Player> players = new();
+            Player.GetPlayersInRange(player.transform.position, Level200SkillRange.Value, players);
+            foreach (Player nearPlayer in players)
+            {
+                if (!BaseAI.IsEnemy(nearPlayer, player))
+                {
+                    if (Groups.API.IsLoaded() && player.GetPlayerID() != nearPlayer.GetPlayerID())
+                    {
+                        var group = Groups.API.GroupPlayers();
+                        if (!group.Exists(x => x.peerId == nearPlayer.m_nview.m_zdo.m_owner)) continue;
+                    }
+
+                    foreach (string effect in effectList)
+                    {
+                        if (nearPlayer.GetSEMan().HaveStatusEffect(effect))
+                        {
+                            nearPlayer.GetSEMan().RemoveStatusEffect(effect);
+                        }
+                    }
+                }
+            }
+        }
+
+        public static void HealPlayers(Player player)
+        {
+            List<Player> players = new();
+            Player.GetPlayersInRange(player.transform.position, Level200SkillRange.Value, players);
+            foreach (Player nearPlayer in players)
+            {
+                if (!BaseAI.IsEnemy(nearPlayer, player))
+                {
+                    if (Groups.API.IsLoaded() && player.GetPlayerID() != nearPlayer.GetPlayerID())
+                    {
+                        var group = Groups.API.GroupPlayers();
+                        if (!group.Exists(x => x.peerId == nearPlayer.m_nview.m_zdo.m_owner)) continue;
+                    }
+                    nearPlayer.Heal(Level200SkillHeal.Value, true);
+                }
+            }
+        }
+
+        public static void ProcessSkill(Player player)
+        {
+            if (Input.GetKeyDown(Level200SkillKey.Value))
+            {
+                if (player is null) return;
+
+                int skill = Level.GetSkillLevel(Skill.Intelligence);
+
+                if (skill < 200) return;
+
+                if (player.GetSEMan().HaveStatusEffect("vls_heal_cooldown"))
+                {
+                    player.Message(MessageHud.MessageType.TopLeft, "Ability not ready");
+                    return;
+                }
+
+                if (player.GetStamina() < Level200SkillCost.Value)
+                {
+                    player.Message(MessageHud.MessageType.TopLeft, "Ability not ready");
+                    return;
+                };
+
+                StatusEffect cooldown = ObjectDB.instance.GetStatusEffect("vls_heal_cooldown");
+                cooldown.m_ttl = Level200SKillCooldown.Value;
+                player.GetSEMan().AddStatusEffect(cooldown);
+                player.UseStamina(Level200SkillCost.Value);
+
+                Object.Instantiate(ZNetScene.instance.GetPrefab("shaman_heal_aoe"), player.GetCenterPoint(), Quaternion.identity);
+                Object.Instantiate(ZNetScene.instance.GetPrefab("sfx_greydwarf_shaman_heal"), player.GetCenterPoint(), Quaternion.identity);
+
+                PurgePlayers(player);
+                HealPlayers(player);
+            }
         }
 
         [HarmonyPatch(typeof(SE_Rested), nameof(SE_Rested.CalculateComfortLevel))]

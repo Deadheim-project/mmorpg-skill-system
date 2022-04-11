@@ -1,6 +1,5 @@
 ﻿using HarmonyLib;
-using Jotunn.Managers;
-using Jotunn.Utils;
+using System.Linq;
 using UnityEngine;
 
 namespace ValheimLevelSystem
@@ -12,24 +11,18 @@ namespace ValheimLevelSystem
         {
             private static void Postfix(ObjectDB __instance)
             {
-                __instance.m_StatusEffects.Add(CreateStatusEffect("vls_strength"));
-                __instance.m_StatusEffects.Add(CreateStatusEffect("vls_agility"));
-                __instance.m_StatusEffects.Add(CreateStatusEffect("vls_focus"));
-                __instance.m_StatusEffects.Add(CreateStatusEffect("vls_intelligence"));
-                __instance.m_StatusEffects.Add(CreateStatusEffect("vls_constitution"));
+                __instance.m_StatusEffects.Add(CreateStatusEffect("vls_heal_cooldown", "Heal Cooldown", Resources.FindObjectsOfTypeAll<Sprite>().FirstOrDefault(x => x.name == "health_icon")));                          
             }
         }
 
-        public static SE_Stats CreateStatusEffect(string efectName)
+        public static SE_Stats CreateStatusEffect(string effectName, string m_name, Sprite icon)
         {
             SE_Stats effect = ScriptableObject.CreateInstance<SE_Stats>();
-            effect.name = efectName;
-            effect.m_name = efectName;
-            effect.m_startMessageType = MessageHud.MessageType.TopLeft;
-            effect.m_startMessage = efectName;
-            effect.m_stopMessageType = MessageHud.MessageType.TopLeft;
-            effect.m_stopMessage = efectName;
-
+            effect.name = effectName;
+            effect.m_name = m_name;
+            effect.m_tooltip = m_name;
+            effect.m_icon = icon;
+  
             return effect;
         }
     }

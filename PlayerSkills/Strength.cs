@@ -1,7 +1,10 @@
 ﻿using BepInEx.Configuration;
 using HarmonyLib;
+using JetBrains.Annotations;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
+using System.Reflection.Emit;
 using UnityEngine;
 
 namespace ValheimLevelSystem.PlayerSkills
@@ -13,18 +16,18 @@ namespace ValheimLevelSystem.PlayerSkills
         public static ConfigEntry<float> PassiveOneHandedMultiplier;
         public static ConfigEntry<float> PassiveChopAndPickaxeMultiplier;
         public static ConfigEntry<float> Level50OneHandedDamage;
-        public static ConfigEntry<float> Level50CarryWeight;
+        public static ConfigEntry<float> Level50ParryWindowBonus;
         public static ConfigEntry<float> Level100TwoHandedDamage;
         public static ConfigEntry<float> Level100ReduceAttackStamina;
-        public static ConfigEntry<float> Level150SwordsDamage;
-        public static ConfigEntry<float> Level150CarryWeight;
+        public static ConfigEntry<float> Level150OneHandedDamage;
+        public static ConfigEntry<float> Level150ParryWindowBonus;
         public static ConfigEntry<float> Level150ReduceAttackStamina;
         public static ConfigEntry<float> Level200ReduceAttackStamina;
         public static ConfigEntry<float> Level200OneTwoHandedDamage;
 
         public static void InitConfigs(ConfigFile config)
         {
-            PassiveTwoHandedMultiplier = config.Bind("Strength Server config", "ExpMultiplierPerLevel", 10f,
+            PassiveTwoHandedMultiplier = config.Bind("Strength Server config", "PassiveTwoHandedMultiplier", 10f,
                     new ConfigDescription("PassiveTwoHandedMultiplier", null, null,
                     new ConfigurationManagerAttributes { IsAdminOnly = true }));
 
@@ -41,9 +44,9 @@ namespace ValheimLevelSystem.PlayerSkills
                     new ConfigDescription("Level50OneHandedDamage", null, null,
                     new ConfigurationManagerAttributes { IsAdminOnly = true }));
 
-            Level50CarryWeight = config.Bind("Strength Server config", "Level50CarryWeight", 50f,
-                    new ConfigDescription("Level50CarryWeight", null, null,
-                    new ConfigurationManagerAttributes { IsAdminOnly = true }));
+            Level50ParryWindowBonus = config.Bind("Strength Server config", "Level50ParryWindowBonus", 0.1f,
+                    new ConfigDescription("Level50ParryWindowBonus", null, null,
+                    new ConfigurationManagerAttributes { IsAdminOnly = true })); ;
 
             Level100TwoHandedDamage = config.Bind("Strength Server config", "Level100TwoHandedDamage", 1.2f,
                     new ConfigDescription("Level100TwoHandedDamage", null, null,
@@ -53,12 +56,12 @@ namespace ValheimLevelSystem.PlayerSkills
                     new ConfigDescription("Level100ReduceAttackStamina", null, null,
                     new ConfigurationManagerAttributes { IsAdminOnly = true }));
 
-            Level150CarryWeight = config.Bind("Strength Server config", "Level150CarryWeight", 50f,
-                    new ConfigDescription("Level150CarryWeight", null, null,
+            Level150ParryWindowBonus = config.Bind("Strength Server config", "Level150ParryWindowBonus", 0.15f,
+                    new ConfigDescription("Level150ParryWindowBonus", null, null,
                     new ConfigurationManagerAttributes { IsAdminOnly = true }));
 
-            Level150SwordsDamage = config.Bind("Strength Server config", "Level150SwordsDamage", 1.2f,
-                    new ConfigDescription("Level150SwordsDamage", null, null,
+            Level150OneHandedDamage = config.Bind("Strength Server config", "Level150OneHandedDamage", 1.2f,
+                    new ConfigDescription("Level150OneHandedDamage", null, null,
                     new ConfigurationManagerAttributes { IsAdminOnly = true }));
 
             Level150ReduceAttackStamina = config.Bind("Strength Server config", "Level150ReduceAttackStamina", 1.1f,
@@ -73,6 +76,41 @@ namespace ValheimLevelSystem.PlayerSkills
                     new ConfigDescription("Level200OneTwoHandedDamage", null, null,
                     new ConfigurationManagerAttributes { IsAdminOnly = true }));
         }
+
+        [HarmonyPatch(typeof(Humanoid), nameof(Humanoid.BlockAttack))]
+        private static class PàtchBlockAttack
+        {
+            private static readonly MethodInfo getParryWindowBonus = AccessTools.DeclaredMethod(typeof(PàtchBlockAttack), nameof(GetParryWindowBonus));
+
+            [UsedImplicitly]
+            private static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
+            {
+                foreach (CodeInstruction instruction in instructions)
+                {
+                    if (instruction.opcode == OpCodes.Ldc_R4 && instruction.OperandIs(Humanoid.m_perfectBlockInterval))
+                    {
+                        yield return new CodeInstruction(OpCodes.Call, getParryWindowBonus);
+                    }
+                    else
+                    {
+                        yield return instruction;
+                    }
+                }
+            }
+
+            private static float GetParryWindowBonus()
+            {
+                int skillLevel = Level.GetSkillLevel(Skill.Strength);
+
+                float timeToAmplify = 0f;
+
+                if (skillLevel >= 50) timeToAmplify = Level50ParryWindowBonus.Value;
+                if (skillLevel >= 100) timeToAmplify += Level150ParryWindowBonus.Value;
+
+                return Humanoid.m_perfectBlockInterval + timeToAmplify;
+            }
+        }
+
         [HarmonyPatch(typeof(ItemDrop.ItemData), nameof(ItemDrop.ItemData.GetDamage), typeof(int))]
         public class GetDamage
         {
@@ -87,6 +125,7 @@ namespace ValheimLevelSystem.PlayerSkills
                 float chopAndPickaxeMultiplier = ((skillLevel / 100f) * PassiveChopAndPickaxeMultiplier.Value) / 100 + 1f;
 
                 if (skillLevel >= 50) oneHandedMultiplier += (Level50OneHandedDamage.Value - 1);
+                if (skillLevel >= 150) oneHandedMultiplier += (Level150OneHandedDamage.Value - 1);
                 if (skillLevel >= 100) twoHandedMultiplier += (Level100TwoHandedDamage.Value - 1);
 
                 if (skillLevel >= 200)
@@ -123,24 +162,6 @@ namespace ValheimLevelSystem.PlayerSkills
                     __result.m_poison *= oneHandedMultiplier;
                     __result.m_spirit *= oneHandedMultiplier;
                 }
-
-                if (skillLevel >= 150)
-                {
-                    if (__instance.m_shared?.m_skillType == Skills.SkillType.Swords)
-                    {
-                        __result.m_blunt *= Level150SwordsDamage.Value;
-                        __result.m_slash *= Level150SwordsDamage.Value;
-                        __result.m_pierce *= Level150SwordsDamage.Value;
-                        __result.m_chop *= Level150SwordsDamage.Value;
-                        __result.m_pickaxe *= Level150SwordsDamage.Value;
-                        __result.m_fire *= Level150SwordsDamage.Value;
-                        __result.m_frost *= Level150SwordsDamage.Value;
-                        __result.m_lightning *= Level150SwordsDamage.Value;
-                        __result.m_poison *= Level150SwordsDamage.Value;
-                        __result.m_spirit *= Level150SwordsDamage.Value;
-                    }
-                }
-
             }
         }
 
@@ -160,35 +181,6 @@ namespace ValheimLevelSystem.PlayerSkills
                         if (skillLevel >= 200) bonus += Level200ReduceAttackStamina.Value - 1;
                         __result *= 1 - (bonus - 1);
                     }
-                }
-            }
-        }
-
-        [HarmonyPatch(typeof(SEMan), nameof(SEMan.ModifyMaxCarryWeight))]
-        public static class ModifyMaxCarryWeight
-        {
-            public static void Postfix(SEMan __instance, ref float limit)
-            {
-                try
-                {
-                    if (__instance.m_character.IsPlayer())
-                    {
-                        int skillLevel = Level.GetSkillLevel(Skill.Strength);
-
-                        if (skillLevel >= 50)
-                        {
-                            limit += Level50CarryWeight.Value;
-                        }
-
-                        if (skillLevel >= 150)
-                        {
-                            limit += Level150CarryWeight.Value;
-                        }
-                    }
-                }
-                catch
-                {
-
                 }
             }
         }
