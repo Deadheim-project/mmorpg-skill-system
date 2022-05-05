@@ -12,12 +12,12 @@ namespace ValheimLevelSystem
     [BepInPlugin(PluginGUID, PluginGUID, Version)]
     [BepInDependency(Jotunn.Main.ModGuid)]
     [BepInDependency("org.bepinex.plugins.groups", BepInDependency.DependencyFlags.SoftDependency)]
-    [NetworkCompatibility(CompatibilityLevel.EveryoneMustHaveMod, VersionStrictness.Minor)]
+    [NetworkCompatibility(CompatibilityLevel.EveryoneMustHaveMod, VersionStrictness.Patch)]
     public class ValheimLevelSystem : BaseUnityPlugin
     {
         public const string PluginGUID = "Detalhes.ValheimLevelSystem";
         public const string Name = "ValheimLevelSystem";
-        public const string Version = "1.5.0";
+        public const string Version = "1.7.0";
 
         public static bool listInitiliazed = false;
 

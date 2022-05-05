@@ -1,11 +1,16 @@
-﻿using System;
+﻿using BepInEx.Configuration;
+using System;
+using UnityEngine;
 
 namespace ValheimLevelSystem.PlayerSkills
 {
     public class SkillManager
     {
+        static KeyboardShortcut morepoints = new KeyboardShortcut(KeyCode.LeftShift);
         public static void SkillUp(Skill skill, int pointsToRaise = 1)
         {
+            if (morepoints.IsPressed()) pointsToRaise = 5;
+
             int availablePoints = Convert.ToInt32(Level.GetAvailablePoints());
             if (availablePoints < pointsToRaise) return;
 

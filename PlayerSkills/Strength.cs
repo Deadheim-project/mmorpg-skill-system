@@ -12,57 +12,97 @@ namespace ValheimLevelSystem.PlayerSkills
     [HarmonyPatch]
     public class Strength
     {
-        public static ConfigEntry<float> PassiveTwoHandedMultiplier;
-        public static ConfigEntry<float> PassiveOneHandedMultiplier;
+        public static ConfigEntry<float> PassiveAxeMultiplier;
+        public static ConfigEntry<float> PassiveSwordMultiplier;
+        public static ConfigEntry<float> PassiveMaceMultiplier;
         public static ConfigEntry<float> PassiveChopAndPickaxeMultiplier;
-        public static ConfigEntry<float> Level50OneHandedDamage;
+        public static ConfigEntry<float> Level50AxeMultiplier;
+        public static ConfigEntry<float> Level50SwordMultiplier;
+        public static ConfigEntry<float> Level50MaceMultiplier;
         public static ConfigEntry<float> Level50ParryWindowBonus;
-        public static ConfigEntry<float> Level100TwoHandedDamage;
+        public static ConfigEntry<float> Level100AxeMultiplier;
+        public static ConfigEntry<float> Level100SwordMultiplier;
+        public static ConfigEntry<float> Level100MaceMultiplier;
         public static ConfigEntry<float> Level100ReduceAttackStamina;
-        public static ConfigEntry<float> Level150OneHandedDamage;
+        public static ConfigEntry<float> Level150AxeMultiplier;
+        public static ConfigEntry<float> Level150SwordMultiplier;
+        public static ConfigEntry<float> Level150MaceMultiplier;
         public static ConfigEntry<float> Level150ParryWindowBonus;
         public static ConfigEntry<float> Level150ReduceAttackStamina;
         public static ConfigEntry<float> Level200ReduceAttackStamina;
-        public static ConfigEntry<float> Level200OneTwoHandedDamage;
+        public static ConfigEntry<float> Level200AxeMultiplier;
+        public static ConfigEntry<float> Level200SwordMultiplier;
+        public static ConfigEntry<float> Level200MaceMultiplier;
 
         public static void InitConfigs(ConfigFile config)
         {
-            PassiveTwoHandedMultiplier = config.Bind("Strength Server config", "PassiveTwoHandedMultiplier", 10f,
-                    new ConfigDescription("PassiveTwoHandedMultiplier", null, null,
+            PassiveAxeMultiplier = config.Bind("Strength Server config", "PassiveAxeMultiplier", 10f,
+                    new ConfigDescription("PassiveAxeMultiplier", null, null,
                     new ConfigurationManagerAttributes { IsAdminOnly = true }));
 
-            PassiveOneHandedMultiplier = config.Bind("Strength Server config", "PassiveOneHandedMultiplier", 10f,
-                    new ConfigDescription("PassiveOneHandedMultiplier", null, null,
-                    new ConfigurationManagerAttributes { IsAdminOnly = true }));
+            PassiveSwordMultiplier = config.Bind("Strength Server config", "PassiveSwordMultiplier", 10f,
+                 new ConfigDescription("PassiveSwordMultiplier", null, null,
+                 new ConfigurationManagerAttributes { IsAdminOnly = true }));
+
+            PassiveMaceMultiplier = config.Bind("Strength Server config", "PassiveMaceMultiplier", 10f,
+        new ConfigDescription("PassiveMaceMultiplier", null, null,
+        new ConfigurationManagerAttributes { IsAdminOnly = true }));
+
 
             PassiveChopAndPickaxeMultiplier = config.Bind("Strength Server config", "PassiveChopAndPickaxeMultiplier", 25f,
                     new ConfigDescription("PassiveChopAndPickaxeMultiplier", null, null,
                     new ConfigurationManagerAttributes { IsAdminOnly = true }));
 
-
-            Level50OneHandedDamage = config.Bind("Strength Server config", "Level50OneHandedDamage", 1.10f,
-                    new ConfigDescription("Level50OneHandedDamage", null, null,
+            Level50AxeMultiplier = config.Bind("Strength Server config", "Level50AxeMultiplier", 1.10f,
+                    new ConfigDescription("Level50AxeMultiplier", null, null,
                     new ConfigurationManagerAttributes { IsAdminOnly = true }));
+
+            Level50MaceMultiplier = config.Bind("Strength Server config", "Level50MaceMultiplier", 1.10f,
+        new ConfigDescription("Level50MaceMultiplier", null, null,
+        new ConfigurationManagerAttributes { IsAdminOnly = true }));
+
+            Level50SwordMultiplier = config.Bind("Strength Server config", "Level50SwordMultiplier", 1.10f,
+        new ConfigDescription("Level50SwordMultiplier", null, null,
+        new ConfigurationManagerAttributes { IsAdminOnly = true }));
+
 
             Level50ParryWindowBonus = config.Bind("Strength Server config", "Level50ParryWindowBonus", 0.1f,
-                    new ConfigDescription("Level50ParryWindowBonus", null, null,
-                    new ConfigurationManagerAttributes { IsAdminOnly = true })); ;
+        new ConfigDescription("Level50ParryWindowBonus", null, null,
+        new ConfigurationManagerAttributes { IsAdminOnly = true })); ;
 
-            Level100TwoHandedDamage = config.Bind("Strength Server config", "Level100TwoHandedDamage", 1.2f,
-                    new ConfigDescription("Level100TwoHandedDamage", null, null,
+
+            Level100AxeMultiplier = config.Bind("Strength Server config", "Level100AxeMultiplier", 1.10f,
+                    new ConfigDescription("Level100AxeMultiplier", null, null,
                     new ConfigurationManagerAttributes { IsAdminOnly = true }));
+
+            Level100MaceMultiplier = config.Bind("Strength Server config", "Level100MaceMultiplier", 1.10f,
+        new ConfigDescription("Level100MaceMultiplier", null, null,
+        new ConfigurationManagerAttributes { IsAdminOnly = true }));
+
+            Level100SwordMultiplier = config.Bind("Strength Server config", "Level100SwordMultiplier", 1.10f,
+        new ConfigDescription("Level100SwordMultiplier", null, null,
+        new ConfigurationManagerAttributes { IsAdminOnly = true }));
 
             Level100ReduceAttackStamina = config.Bind("Strength Server config", "Level100ReduceAttackStamina", 1.1f,
                     new ConfigDescription("Level100ReduceAttackStamina", null, null,
                     new ConfigurationManagerAttributes { IsAdminOnly = true }));
 
+
             Level150ParryWindowBonus = config.Bind("Strength Server config", "Level150ParryWindowBonus", 0.15f,
                     new ConfigDescription("Level150ParryWindowBonus", null, null,
                     new ConfigurationManagerAttributes { IsAdminOnly = true }));
 
-            Level150OneHandedDamage = config.Bind("Strength Server config", "Level150OneHandedDamage", 1.2f,
-                    new ConfigDescription("Level150OneHandedDamage", null, null,
+            Level150AxeMultiplier = config.Bind("Strength Server config", "Level150AxeMultiplier", 1.2f,
+                    new ConfigDescription("Level150AxeMultiplier", null, null,
                     new ConfigurationManagerAttributes { IsAdminOnly = true }));
+
+            Level150SwordMultiplier = config.Bind("Strength Server config", "Level150SwordMultiplier", 1.2f,
+        new ConfigDescription("Level150SwordMultiplier", null, null,
+        new ConfigurationManagerAttributes { IsAdminOnly = true }));
+
+            Level150MaceMultiplier = config.Bind("Strength Server config", "Level150MaceMultiplier", 1.2f,
+        new ConfigDescription("Level150MaceMultiplier", null, null,
+        new ConfigurationManagerAttributes { IsAdminOnly = true }));
 
             Level150ReduceAttackStamina = config.Bind("Strength Server config", "Level150ReduceAttackStamina", 1.1f,
                     new ConfigDescription("Level150ReduceAttackStamina", null, null,
@@ -72,9 +112,18 @@ namespace ValheimLevelSystem.PlayerSkills
                     new ConfigDescription("Level200ReduceAttackStamina", null, null,
                     new ConfigurationManagerAttributes { IsAdminOnly = true }));
 
-            Level200OneTwoHandedDamage = config.Bind("Strength Server config", "Level200OneTwoHandedDamage", 1.15f,
-                    new ConfigDescription("Level200OneTwoHandedDamage", null, null,
+            Level200AxeMultiplier = config.Bind("Strength Server config", "Level200AxeMultiplier", 1.2f,
+                    new ConfigDescription("Level200AxeMultiplier", null, null,
                     new ConfigurationManagerAttributes { IsAdminOnly = true }));
+
+            Level200SwordMultiplier = config.Bind("Strength Server config", "Level200SwordMultiplier", 1.2f,
+        new ConfigDescription("Level200SwordMultiplier", null, null,
+        new ConfigurationManagerAttributes { IsAdminOnly = true }));
+
+            Level200MaceMultiplier = config.Bind("Strength Server config", "Level200MaceMultiplier", 1.2f,
+        new ConfigDescription("Level200MaceMultiplier", null, null,
+        new ConfigurationManagerAttributes { IsAdminOnly = true }));
+
         }
 
         [HarmonyPatch(typeof(Humanoid), nameof(Humanoid.BlockAttack))]
@@ -120,48 +169,51 @@ namespace ValheimLevelSystem.PlayerSkills
 
                 if (skillLevel == 1) return;
 
-                float twoHandedMultiplier = ((skillLevel / 100f) * PassiveTwoHandedMultiplier.Value) / 100f + 1f;
-                float oneHandedMultiplier = ((skillLevel / 100f) * PassiveOneHandedMultiplier.Value) / 100f + 1f;
+                float axeMultiplier = ((skillLevel / 100f) * PassiveAxeMultiplier.Value) / 100f + 1f;
+                float swordMultiplier = ((skillLevel / 100f) * PassiveSwordMultiplier.Value) / 100f + 1f;
+                float maceMultiplier = ((skillLevel / 100f) * PassiveMaceMultiplier.Value) / 100f + 1f;
                 float chopAndPickaxeMultiplier = ((skillLevel / 100f) * PassiveChopAndPickaxeMultiplier.Value) / 100 + 1f;
 
-                if (skillLevel >= 50) oneHandedMultiplier += (Level50OneHandedDamage.Value - 1);
-                if (skillLevel >= 150) oneHandedMultiplier += (Level150OneHandedDamage.Value - 1);
-                if (skillLevel >= 100) twoHandedMultiplier += (Level100TwoHandedDamage.Value - 1);
+                if (skillLevel >= 50)
+                {
+                    axeMultiplier += Level50AxeMultiplier.Value - 1;
+                    swordMultiplier += Level50AxeMultiplier.Value - 1;
+                    maceMultiplier += Level50AxeMultiplier.Value - 1;
+                }
+
+                if (skillLevel >= 100)
+                {
+                    axeMultiplier += Level100AxeMultiplier.Value - 1;
+                    swordMultiplier += Level100AxeMultiplier.Value - 1;
+                    maceMultiplier += Level100AxeMultiplier.Value - 1;
+                }
+
+                if (skillLevel >= 150)
+                {
+                    axeMultiplier += Level150AxeMultiplier.Value - 1;
+                    swordMultiplier += Level50AxeMultiplier.Value - 1;
+                    maceMultiplier += Level50AxeMultiplier.Value - 1;
+                }
+
 
                 if (skillLevel >= 200)
                 {
-                    oneHandedMultiplier += (Level200OneTwoHandedDamage.Value - 1);
-                    twoHandedMultiplier += (Level200OneTwoHandedDamage.Value - 1);
+                    axeMultiplier += Level200AxeMultiplier.Value - 1;
+                    swordMultiplier += Level50AxeMultiplier.Value - 1;
+                    maceMultiplier += Level50AxeMultiplier.Value - 1;
                 }
 
-                if (__instance.m_shared.m_itemType == ItemDrop.ItemData.ItemType.TwoHandedWeapon)
-                {
-                    __result.m_blunt *= twoHandedMultiplier;
-                    __result.m_slash *= twoHandedMultiplier;
-                    __result.m_pierce *= twoHandedMultiplier;
-                    __result.m_chop *= chopAndPickaxeMultiplier;
-                    __result.m_pickaxe *= chopAndPickaxeMultiplier;
-                    __result.m_fire *= twoHandedMultiplier;
-                    __result.m_frost *= twoHandedMultiplier;
-                    __result.m_lightning *= twoHandedMultiplier;
-                    __result.m_poison *= twoHandedMultiplier;
-                    __result.m_spirit *= twoHandedMultiplier;
-                }
+                float multiplier = 1;
 
+                if (__instance.m_shared.m_skillType == Skills.SkillType.Clubs) multiplier = maceMultiplier;
+                if (__instance.m_shared.m_skillType == Skills.SkillType.Swords) multiplier = swordMultiplier;
+                if (__instance.m_shared.m_skillType == Skills.SkillType.Axes) multiplier = axeMultiplier;
 
-                if (__instance.m_shared.m_itemType == ItemDrop.ItemData.ItemType.OneHandedWeapon)
-                {
-                    __result.m_blunt *= oneHandedMultiplier;
-                    __result.m_slash *= oneHandedMultiplier;
-                    __result.m_pierce *= oneHandedMultiplier;
-                    __result.m_chop *= chopAndPickaxeMultiplier;
-                    __result.m_pickaxe *= chopAndPickaxeMultiplier;
-                    __result.m_fire *= oneHandedMultiplier;
-                    __result.m_frost *= oneHandedMultiplier;
-                    __result.m_lightning *= oneHandedMultiplier;
-                    __result.m_poison *= oneHandedMultiplier;
-                    __result.m_spirit *= oneHandedMultiplier;
-                }
+                __result.m_blunt *= multiplier;
+                __result.m_slash *= multiplier;
+                __result.m_pierce *= multiplier;
+                __result.m_chop *= chopAndPickaxeMultiplier;
+                __result.m_pickaxe *= chopAndPickaxeMultiplier;
             }
         }
 
